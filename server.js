@@ -14,10 +14,9 @@ var app = express();
 
 //내부 모듈
 var route_loader = require('./routes/route_loader');
-
+var user = require('./routes/user');
 //설정 파일
 var config = require('./config/config');
-var db_config = require('./config/db_config.json');
 
 
 app.set('port', process.env.PORT || config.server_port);
@@ -36,14 +35,7 @@ app.use(expressSession({
 
 //mysql db
 var mysql = require('mysql');
-var pool = mysql.createPool({
-    host : db_config.host,
-    user : db_config.user,
-    password : db_config.password,
-    database: db_config.database,
-    debug : false
-});
-
+var pool = mysql.createPool(config.mysql_set[1]);
 user.init(pool);
 
 //라우팅 등록

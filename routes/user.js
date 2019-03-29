@@ -43,12 +43,10 @@ var joinUser = function(id, name, password, callback){
 
 
 var idCheck = function(id, callback){
-    console.log('authJoin 호출');
+    console.log('idCheck 호출');
     
     pool.getConnection(function(err, conn){
-        
-        if(err){
-            
+        if(err){  
             if(conn){
                 conn.release();
             }
@@ -116,7 +114,7 @@ var joinuser = function(req, res){
     }
     
     res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-    res.write("{code:'200', 'message':" + result + "}");
+    res.write("{code:'200', 'message':'" + result + "'}");
     res.end();
 };
 
@@ -124,9 +122,6 @@ var idcheck = function(req, res){
     console.log('idcheck 호출: ');
     
     var paramId = req.body.id || req.query.id;
-    
-    var result = '';
-    
     console.log(paramId);
     
     if(pool){
@@ -136,27 +131,32 @@ var idcheck = function(req, res){
             if(err){
                 console.error('id 확인 중 오류 : ' + err.stack);
                 
-                result = 'error';
-                res.send(result);
+                res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
+                res.write("{code:'200', 'message':'error'}");
+                res.end();
                 return;
             }
             
             if(rows){
                 console.log('사용중인 아이디 존재: ' + rows[0].id);
-                result = 'fail';
+                res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
+                res.write("{code:'200', 'message':'fail'}");
+                res.end();
             }else{
                 console.log('해당 아이디 사용 가능');
-                result = 'success';
+                res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
+                res.write("{code:'200', 'message':'success'}");
+                res.end();
             }
             
         });
         
     }else{
-        result = 'db_fail';
+        res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
+        res.write("{code:'200', 'message':'db_fail'}");
+        res.end();
     }
-    res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-    res.write("{code:'200', 'message':" + result + "}");
-    res.end();
+
 };
 
 module.exports.init = init;
