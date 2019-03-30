@@ -14,7 +14,7 @@ var app = express();
 
 //내부 모듈
 var route_loader = require('./routes/route_loader');
-var user = require('./routes/user');
+
 //설정 파일
 var config = require('./config/config');
 
@@ -36,11 +36,10 @@ app.use(expressSession({
 //mysql db
 var mysql = require('mysql');
 var pool = mysql.createPool(config.mysql_set[2]);
-user.init(pool);
 
 //라우팅 등록
 var router = express.Router();
-route_loader.init(app, router);
+route_loader.init(app, router, pool);
 
 //오류처리
 var errorHaendler = expressErrorHandler({
