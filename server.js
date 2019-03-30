@@ -35,7 +35,7 @@ app.use(expressSession({
 
 //mysql db
 var mysql = require('mysql');
-var pool = mysql.createPool(config.mysql_set[1]);
+var pool = mysql.createPool(config.mysql_set[2]);
 user.init(pool);
 
 //라우팅 등록

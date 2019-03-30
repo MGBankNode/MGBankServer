@@ -5,7 +5,7 @@ var init = function(mysqlPool){
     pool = mysqlPool;
 }
 
-var joinUser = function(id, name, password, callback){
+var joinUser = function(id, password, name, phone, callback){
     pool.getConnection( function(err, conn) {
         
         if(err){
@@ -20,13 +20,13 @@ var joinUser = function(id, name, password, callback){
         
         console.log('데이터베이스 연결 스레드 아이디 : ' + conn.threadId);
         
-        var reqData = {id:id , name:name, password:password};
+        var reqData = {id:id, pw:password, name:name, phone:phone };
         
-        var exec = conn.query('insert into client set ? ', reqData, 
+        var exec = conn.query('insert into user set ? ', reqData, 
         
         function(err, result){
             conn.release();
-            console.log('실행 대상 SQL: ' + exec.sql);
+            console.log('실행 SQL: ' + exec.sql);
 
             if(err){
                 console.log('SQL 실행 오류');
@@ -43,8 +43,6 @@ var joinUser = function(id, name, password, callback){
 
 
 var idCheck = function(id, callback){
-    console.log('idCheck 호출');
-    
     pool.getConnection(function(err, conn){
         if(err){  
             if(conn){
@@ -57,7 +55,7 @@ var idCheck = function(id, callback){
         console.log('데이터베이스 연결 스레드 아이디 : ' + conn.threadId);
         
         var column = 'id';
-        var tabelname = 'client';
+        var tabelname = 'user';
         
         var exec = conn.query("select ?? from ?? where id = ?", 
                               [column, tabelname, id], function(err, rows){
@@ -77,24 +75,23 @@ var idCheck = function(id, callback){
 };
 
 var joinuser = function(req, res){
-    console.log('joinuser 호출: ');
+    console.log('<joinuser> 호출 ');
     
     var paramId = req.body.id || req.query.id;
     var paramPassword = req.body.password || req.query.password;
     var paramName = req.body.name || req.query.name;
-    
-    var result = '';
-    
-    console.log(paramId + ', ' + paramPassword + ', ' + paramName);
+    var paramPhone = req.body.phone || req.query.phone;
     
     //pool 객체 초기화 된경우
     if(pool){
-        joinUser(paramId, paramName, paramPassword, function(err, joinedUser){
+        joinUser(paramId, paramPassword, paramName, paramPhone, function(err, joinedUser){
             //동일 아이디로 추가시는 오류
             if(err){
                 console.error('회원가입 중 오류 : ' + err.stack);
                 
-                result = 'error';
+                res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
+                res.write("{code:'200', 'message':'error'}");
+                res.end();
                 return;
             }
             
@@ -104,25 +101,26 @@ var joinuser = function(req, res){
                 var insertId = joinedUser.insertId;
                 console.log('추가한 레코드의 아이디: ' + insertId);
                 
-                result = 'success';
+                res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
+                res.write("{code:'200', 'message':'success'}");
+                res.end();
             }else{
-                result = 'fail';
+                res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
+                res.write("{code:'200', 'message':'fail'}");
+                res.end();
             }
         });
     }else{
-        result = 'db_fail';
+        res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
+        res.write("{code:'200', 'message':'db_fail'}");
+        res.end();
     }
-    
-    res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-    res.write("{code:'200', 'message':'" + result + "'}");
-    res.end();
 };
 
 var idcheck = function(req, res){
-    console.log('idcheck 호출: ');
+    console.log('<idcheck 호출>');
     
     var paramId = req.body.id || req.query.id;
-    console.log(paramId);
     
     if(pool){
         
@@ -156,6 +154,7 @@ var idcheck = function(req, res){
         res.write("{code:'200', 'message':'db_fail'}");
         res.end();
     }
+
 
 };
 
