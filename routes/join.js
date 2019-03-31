@@ -1,7 +1,7 @@
 var pool;
 
 var init = function(mysqlPool){
-    console.log('user init 호출');
+    console.log('join init 호출');
     pool = mysqlPool;
 }
 
@@ -154,9 +154,8 @@ var idcheck = function(req, res){
         res.write("{code:'200', 'message':'db_fail'}");
         res.end();
     }
-
-
 };
+
 
 module.exports.init = init;
 module.exports.joinuser = joinuser;

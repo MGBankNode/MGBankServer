@@ -1,11 +1,11 @@
 var route_loader = {};
 var config = require('../config/config');
 
-route_loader.init = function(app, router){
+route_loader.init = function(app, router, pool){
     
     console.log('route_loader 호출');
     
-    return initRoutes(app, router);
+    return initRoutes(app, router, pool);
 }
 
 function initRoutes(app, router){
@@ -16,6 +16,8 @@ function initRoutes(app, router){
         
         var curRoute = config.route_info[i];
         var curModule = require(curRoute.file);
+        
+        curModule.init(pool);
         
         if(curRoute.type == 'get'){
             

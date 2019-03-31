@@ -24,3 +24,6 @@ MG 새마을 금고의 어플리케이션 개발팀 Node의 Server  Repository�
 - cookie-parser
 - mysql
 
+#### 설명 문서
+
+- https://github.com/MGBankNode/MGBankServer/tree/master/docs/README.md
