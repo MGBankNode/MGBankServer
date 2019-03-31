@@ -6,6 +6,4 @@
 
 ## 목차
 
-- [AWS EC2 생성](https://github.com/MGBankNode/MGBankServer/tree/master/docs/PublishWebServer/CreateAWSEC2.md.md)
-- []()
-- []()
+- [AWS EC2 생성](https://github.com/MGBankNode/MGBankServer/tree/master/docs/PublishWebServer/CreateAWSEC2.md)
