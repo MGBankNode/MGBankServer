@@ -21,8 +21,8 @@ var config = require('./config/config');
 
 app.set('port', process.env.PORT || config.server_port);
 
-app.use(bodyParser.urlencoded({ extended: false })); 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false })); 
 app.use('/public', serveStatic(path.join(__dirname, 'public')));
 
 app.use(cookieParser());
@@ -53,7 +53,7 @@ app.use(errorHandler);
 
 //서버시작
 http.createServer(app).listen(app.get('port'), function(){
-    console.log('서버가 시작 -> 포트 : ' + app.get('port')); 
+    console.log('서버 시작 -> 포트 : ' + app.get('port')); 
     
 });
 

@@ -4,18 +4,35 @@
 
 광운대학교 컴퓨터 소프트웨어학과 2016117033 박연지
 
+## 목차
+
+- [AWS 접속](#1)
+- [인스턴스 생성 위한 필요 항목 확인](#2)
+- [Key Pairs 생성](#3)
+
+- [Security Group 생성](#4)
+
+- [Instance 생성](#5)
+- [Putty를 이용하여 인스턴스 SSH 접속](#6)
+
+<a name="1"></a>
+
 ## AWS 접속
 
 Amazone Web Service 에 접속하여 로그인한 후 AWS Management Console 화면에서 [Compute -> EC2] 에 접속 한다.
 
 ![image](https://user-images.githubusercontent.com/36066656/55286780-3e51c400-53db-11e9-97b2-07eeee1fa488.png)
 
-## 인스턴스 생성위한 필요 항목 확인
+<a name="2"></a>
+
+## 인스턴스 생성 위한 필요 항목 확인
 
 - **Key Pairs**: 공개키 암호화 기업을 사용하여 EC2 유저 정보 암호화 및 해독하는 키 쌍
 - **Security Groups**: 트래픽 제어하는 가상 방화벽 역할(인스턴스 생성후 ssh 접속 위한 port 설정)
 
 ![image](https://user-images.githubusercontent.com/36066656/55286832-fb442080-53db-11e9-827f-7cf7e7c3f02e.png)
+
+<a name="3"></a>
 
 ## Key Pairs 생성
 
@@ -41,6 +58,8 @@ Amazone Web Service 에 접속하여 로그인한 후 AWS Management Console 화
 
   ![image](https://user-images.githubusercontent.com/36066656/55287222-136a6e80-53e1-11e9-86d0-a066b698b806.png)
 
+<a name="4"></a>
+
 ## Security Group 생성
 
 왼쪽의 [NETWORK & SECURITY -> Security Group]에 접속하여 Create Security Group하여 생성한다.
@@ -48,6 +67,8 @@ Amazone Web Service 에 접속하여 로그인한 후 AWS Management Console 화
 - Inbound rule에 SSH를 선택하고 Source는 My IP를 설정하여 다른사람이 해당 인스턴스에 접근하지 못하도록 한다.
 
   ![image](https://user-images.githubusercontent.com/36066656/55287329-6c86d200-53e2-11e9-8c46-60ee71cc25ea.png)
+
+<a name="5"></a>
 
 ## Instance 생성
 
@@ -71,6 +92,8 @@ Amazone Web Service 에 접속하여 로그인한 후 AWS Management Console 화
 - Review에서 Launch를 눌러 앞에서 생성한 key pair 선택하여 Launch Instances 클릭하여 인스턴스 생성
 
 ![image](https://user-images.githubusercontent.com/36066656/55287792-9c38d880-53e8-11e9-8562-9cac98eb30eb.png)
+
+<a name="6"></a>
 
 ## Putty를 이용하여 인스턴스 SSH 접속
 
