@@ -7,3 +7,5 @@
 ## 목차
 
 - [AWS EC2 생성](https://github.com/MGBankNode/MGBankServer/tree/master/docs/PublishWebServer/CreateAWSEC2.md)
+- [사용자 생성](https://github.com/MGBankNode/MGBankServer/tree/master/docs/PublishWebServer/AddUser.md)
+- [Nodejs와 npm 설치](https://github.com/MGBankNode/MGBankServer/tree/master/docs/PublishWebServer/InstallNodejsNPM.md)
