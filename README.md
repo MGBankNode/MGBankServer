@@ -23,6 +23,7 @@ MG 새마을 금고의 어플리케이션 개발팀 Node의 Server  Repository�
 - body-parser
 - cookie-parser
 - mysql
+- pm2
 
 #### 설명 문서
 

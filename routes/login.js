@@ -17,7 +17,7 @@ var loginCheck = function(id, password,callback){
         
         console.log('데이터베이스 연결 스레드 아이디 : ' + conn.threadId);
         
-        var column = ['id', 'pw'];
+        var column = ['id', 'pw', 'name'];
         var tabelname = 'user';
         
         var exec = conn.query("select ?? from ?? where id = ? and pw = ?", 
@@ -57,8 +57,14 @@ var logincheck = function(req, res){
             }
             
             if(rows){
+		console.dir(rows);
                 res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-                res.write("{code:'200', 'message':'success'}");
+                var data = {
+			code:'200',
+			message:'success',
+			name:rows[0].name
+		};
+		res.write(JSON.stringify(data));
                 res.end();
             }else{
                 res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});

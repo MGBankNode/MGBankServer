@@ -8,7 +8,7 @@ route_loader.init = function(app, router, pool){
     return initRoutes(app, router, pool);
 }
 
-function initRoutes(app, router){
+function initRoutes(app, router, pool){
     
     var infoLen = config.route_info.length;
     
