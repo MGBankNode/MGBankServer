@@ -17,7 +17,7 @@ var loginCheck = function(id, password,callback){
         
         console.log('데이터베이스 연결 스레드 아이디 : ' + conn.threadId);
         
-        var column = ['id', 'pw'];
+        var column = ['id', 'pw', 'name'];
         var tabelname = 'user';
         
         var exec = conn.query("select ?? from ?? where id = ? and pw = ?", 
@@ -48,30 +48,50 @@ var logincheck = function(req, res){
         loginCheck(paramId, paramPassword, function(err, rows){
             
             if(err){
-                console.error('로그인 중 오류 : ' + err.stack);
                 
-                res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-                res.write("{code:'200', 'message':'error'}");
+                console.error('로그인 중 오류 : ' + err.stack);
+                res.writeHead('500', {'Content-Type':'application/json;charset=utf8'});
+                res.write(JSON.stringify({code:'500', message:'error', error: err, name: null}));
                 res.end();
+                
                 return;
             }
             
             if(rows){
+                
+                console.dir(rows);
                 res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-                res.write("{code:'200', 'message':'success'}");
+                res.write(JSON.stringify(
+                    {
+                        code:'200', 
+                        message:'success', 
+                        error: null, 
+                        name: rows[0].name
+                    }));
                 res.end();
+                
             }else{
+                
                 res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-                res.write("{code:'200', 'message':'fail'}");
+                res.write(JSON.stringify(
+                    {
+                        code:'200', 
+                        message:'fail', 
+                        error: null, 
+                        name: null
+                    }));
                 res.end();
+                
             }
             
         });
         
     }else{
-        res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-        res.write("{code:'200', 'message':'db_fail'}");
+        
+        res.writeHead('503', {'Content-Type':'application/json;charset=utf8'});
+        res.write(JSON.stringify({code:'503', message:'db_fail', error: null, name: null}));
         res.end();
+        
     }
 };
 

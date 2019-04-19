@@ -5,6 +5,19 @@ var init = function(mysqlPool){
     pool = mysqlPool;
 }
 
+var response = function(res, code, message, error){
+    res.writeHead(code, {'Content-Type':'application/json;charset=utf8'});
+
+    var data = {
+        code: code,
+        message: message,
+        error: error
+    };
+
+    res.write(JSON.stringify(data));
+    res.end();
+};
+
 var joinUser = function(id, password, name, phone, callback){
     pool.getConnection( function(err, conn) {
         
@@ -87,33 +100,31 @@ var joinuser = function(req, res){
         joinUser(paramId, paramPassword, paramName, paramPhone, function(err, joinedUser){
             //동일 아이디로 추가시는 오류
             if(err){
-                console.error('회원가입 중 오류 : ' + err.stack);
                 
-                res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-                res.write("{code:'200', 'message':'error'}");
-                res.end();
+                console.error('회원가입 중 오류 : ' + err.stack);
+                response(res, '500', 'error', err);
                 return;
+                
             }
             
             if(joinedUser){
+                
                 console.dir(joinedUser);
                 console.dir('inserted' + joinedUser.affectedRows + 'rows');
                 var insertId = joinedUser.insertId;
                 console.log('추가한 레코드의 아이디: ' + insertId);
+                response(res, '200', 'success', err);
                 
-                res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-                res.write("{code:'200', 'message':'success'}");
-                res.end();
             }else{
-                res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-                res.write("{code:'200', 'message':'fail'}");
-                res.end();
+                
+                response(res, '200', 'fail', err);
+                
             }
         });
     }else{
-        res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-        res.write("{code:'200', 'message':'db_fail'}");
-        res.end();
+        
+        response(res, '503', 'db_fail', null);
+
     }
 };
 
@@ -127,32 +138,29 @@ var idcheck = function(req, res){
         idCheck(paramId, function(err, rows){
             
             if(err){
-                console.error('id 확인 중 오류 : ' + err.stack);
                 
-                res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-                res.write("{code:'200', 'message':'error'}");
-                res.end();
+                console.error('id 확인 중 오류 : ' + err.stack);              
+                response(res, '500', 'error', err);
                 return;
+                
             }
             
             if(rows){
+                
                 console.log('사용중인 아이디 존재: ' + rows[0].id);
-                res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-                res.write("{code:'200', 'message':'fail'}");
-                res.end();
+                response(res, '200', 'fail', null);
+                
             }else{
+                
                 console.log('해당 아이디 사용 가능');
-                res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-                res.write("{code:'200', 'message':'success'}");
-                res.end();
+                response(res, '200', 'success', null);
+                
             }
             
         });
         
     }else{
-        res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-        res.write("{code:'200', 'message':'db_fail'}");
-        res.end();
+        response(res, '503', 'db_fail', null);
     }
 };
 
