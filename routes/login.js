@@ -48,36 +48,50 @@ var logincheck = function(req, res){
         loginCheck(paramId, paramPassword, function(err, rows){
             
             if(err){
-                console.error('로그인 중 오류 : ' + err.stack);
                 
-                res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-                res.write("{code:'200', 'message':'error'}");
+                console.error('로그인 중 오류 : ' + err.stack);
+                res.writeHead('500', {'Content-Type':'application/json;charset=utf8'});
+                res.write(JSON.stringify({code:'500', message:'error', error: err, name: null}));
                 res.end();
+                
                 return;
             }
             
             if(rows){
-		console.dir(rows);
+                
+                console.dir(rows);
                 res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-                var data = {
-			code:'200',
-			message:'success',
-			name:rows[0].name
-		};
-		res.write(JSON.stringify(data));
+                res.write(JSON.stringify(
+                    {
+                        code:'200', 
+                        message:'success', 
+                        error: null, 
+                        name: rows[0].name
+                    }));
                 res.end();
+                
             }else{
+                
                 res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-                res.write("{code:'200', 'message':'fail'}");
+                res.write(JSON.stringify(
+                    {
+                        code:'200', 
+                        message:'fail', 
+                        error: null, 
+                        name: null
+                    }));
                 res.end();
+                
             }
             
         });
         
     }else{
-        res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-        res.write("{code:'200', 'message':'db_fail'}");
+        
+        res.writeHead('503', {'Content-Type':'application/json;charset=utf8'});
+        res.write(JSON.stringify({code:'503', message:'db_fail', error: null, name: null}));
         res.end();
+        
     }
 };
 
