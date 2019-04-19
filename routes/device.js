@@ -71,6 +71,37 @@ var deviceCheck = function(mobile, callback){
     });
 };
 
+var deleteDevice = function(mobile, callback){
+    pool.getConnection(function(err, conn){
+        if(err){  
+            if(conn){
+                conn.release();
+            }
+            callback(err, null);
+            return;
+        }
+        
+        console.log('데이터베이스 연결 스레드 아이디 : ' + conn.threadId);
+        
+        
+        var exec = conn.query("delete from device where mobile = ?",
+                              mobile, function(err, result){
+            conn.release();
+            console.log('실행 SQL: ' + exec.sql);
+
+            if(err){
+                console.log('SQL 실행 오류');
+                console.dir(err);
+
+                callback(err, null);
+                return;
+            }
+
+            callback(null, result);
+        });
+    });
+};
+
 var adddevice = function(req, res){
     console.log('<adddevice 호출>');
     
@@ -175,6 +206,46 @@ var devicecheck = function(req, res){
     }
 };
 
+var deletedevice = function(req, res){
+    console.log('<deletedevice 호출>');
+    
+    var paramMobile = req.body.mobile || req.query.mobile;
+    
+    if(pool){
+        deleteDevice(paramMobile,  
+                  function(err, deletedDevice){
+            
+            if(err){
+                
+                console.error('단말 정보 제거 중 오류 : ' + err.stack);
+                res.writeHead('500', {'Content-Type':'application/json;charset=utf8'});
+                res.write(JSON.stringify({code:'500', message:'error', error: err}));
+                res.end();
+                return;
+                
+            }
+            
+            if(deletedDevice){
+                console.dir(deletedDevice);
+                res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
+                res.write(JSON.stringify({code:'200', message:'success', error: null}));
+                res.end();
+            }else{
+                res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
+                res.write(JSON.stringify({code:'200', message:'fail', error: null}));
+                res.end();
+            }
+            
+        });
+        
+    }else{
+        res.writeHead('503', {'Content-Type':'application/json;charset=utf8'});
+        res.write(JSON.stringify({code:'503', message:'db_fail', error: null}));
+        res.end();
+    }
+};
+
 module.exports.init = init;
 module.exports.adddevice = adddevice;
 module.exports.devicecheck = devicecheck;
+module.exports.deletedevice = deletedevice;
