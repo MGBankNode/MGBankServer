@@ -192,7 +192,10 @@
         "code" : "200",
         "message" : "success",
         "error" : null,
-        "name" : "testUserName"
+        "id" : "testID",
+        "name" : "testUserName",
+        "accountCheck" : NUM(0/1),
+        "update_at" : TIME
     }
     ```
 
@@ -203,7 +206,10 @@
         "code" : "200",
         "message" : "fail",
         "error" : null,
-        "name" : null
+        "id" : null,
+        "name" : null,
+        "accountCheck" : null,
+        "update_at" : null
     }
     ```
 
@@ -214,7 +220,10 @@
         "code" : "503",
         "message" : "db_fail",
         "error" : null,
-        "name" : null
+        "id" : null,
+        "name" : null,
+        "accountCheck" : null,
+        "update_at" : null
     }
     ```
 
@@ -225,7 +234,10 @@
         "code" : "500",
         "message" : "error",
     	"error" : "errorMessage",
-        "name" : null
+        "id" : null,
+        "name" : null,
+        "accountCheck" : null,
+        "update_at" : null
     }
     ```
 
