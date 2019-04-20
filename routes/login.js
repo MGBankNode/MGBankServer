@@ -5,7 +5,7 @@ var init = function(mysqlPool){
     pool = mysqlPool;
 }
 
-var loginCheck = function(id, password,callback){
+var loginCheck = function(id, password, callback){
     pool.getConnection(function(err, conn){
         if(err){  
             if(conn){
@@ -17,22 +17,47 @@ var loginCheck = function(id, password,callback){
         
         console.log('데이터베이스 연결 스레드 아이디 : ' + conn.threadId);
         
-        var column = ['id', 'pw', 'name'];
-        var tabelname = 'user';
-        
+        var column = ['name', 'accountCheck', 'update_at'];
+        var tablename = 'user';
+
         var exec = conn.query("select ?? from ?? where id = ? and pw = ?", 
-                              [column, tabelname, id, password], function(err, rows){
-            
-            conn.release();
-            console.log('실행 SQL + ', exec.sql);
+                              [column, tablename, id, password], function(err, rows){
+            console.log('실행 SQL1 + ', exec.sql);
+
             
             if(rows.length > 0){
-                console.log('로그인 성공:'+ id);
-                callback(null, rows);
+                
+                console.dir(rows);
+                var data = [ id, rows[0].name, rows[0].accountCheck, rows[0].update_at];
+                
+                console.log('로그인 성공: '+ id);
+
+                var exec1 = conn.query("update ?? set update_at = CURRENT_TIMESTAMP where id = ?",
+                                  [tablename,  id], function(err, result){
+                    conn.release();
+                    console.log('실행 SQL2 + ', exec1.sql);
+                    console.log(result);
+                    
+                    if(result.affectedRows > 0){
+                        
+                        console.log('접속 시간 업데이트 성공');
+                        callback(null, data);
+                        
+                    }else{
+                        
+                        console.log('접속 시간 업데이트 실패');
+                        callback(null, null);
+                        
+                    }
+                });
+                    
             }else{
+                conn.release();
                 console.log('로그인 실패');
-                callback(null, null);
+                callback(null, null);     
+                
             }
+            
         });
     });
 };
@@ -51,7 +76,16 @@ var logincheck = function(req, res){
                 
                 console.error('로그인 중 오류 : ' + err.stack);
                 res.writeHead('500', {'Content-Type':'application/json;charset=utf8'});
-                res.write(JSON.stringify({code:'500', message:'error', error: err, name: null}));
+                res.write(JSON.stringify(
+                    {
+                        code:'500', 
+                        message:'error', 
+                        error: err,
+                        id: null,
+                        name: null,
+                        accountCheck: null,
+                        update_at: null
+                    }));
                 res.end();
                 
                 return;
@@ -66,7 +100,10 @@ var logincheck = function(req, res){
                         code:'200', 
                         message:'success', 
                         error: null, 
-                        name: rows[0].name
+                        id: rows[0],
+                        name: rows[1],
+                        accountCheck: rows[2],
+                        update_at: rows[3]
                     }));
                 res.end();
                 
@@ -77,8 +114,11 @@ var logincheck = function(req, res){
                     {
                         code:'200', 
                         message:'fail', 
-                        error: null, 
-                        name: null
+                        error: null,
+                        id: null,
+                        name: null,
+                        accountCheck: null,
+                        update_at: null
                     }));
                 res.end();
                 
@@ -89,7 +129,16 @@ var logincheck = function(req, res){
     }else{
         
         res.writeHead('503', {'Content-Type':'application/json;charset=utf8'});
-        res.write(JSON.stringify({code:'503', message:'db_fail', error: null, name: null}));
+        res.write(JSON.stringify(
+            {
+                code:'503',
+                message:'db_fail', 
+                error: null, 
+                id: null,
+                name: null,
+                accountCheck: null,
+                update_at: null
+            }));
         res.end();
         
     }

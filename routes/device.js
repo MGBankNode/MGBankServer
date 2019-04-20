@@ -52,10 +52,10 @@ var deviceCheck = function(mobile, callback){
         console.log('데이터베이스 연결 스레드 아이디 : ' + conn.threadId);
         
         var column = ['mobile'];
-        var tabelname = 'device';
+        var tablename = 'device';
         
         var exec = conn.query("select ?? from ?? where mobile = ?", 
-                              [column, tabelname, mobile], function(err, rows){
+                              [column, tablename, mobile], function(err, rows){
             
             conn.release();
             console.log('실행 SQL + ', exec.sql);
