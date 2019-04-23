@@ -2,7 +2,8 @@
 var express = require('express');
 var http = require('http')
 var path = require('path');
-
+var morgan = require('morgan');
+var stream = require('./config/winston');
 var bodyParser = require('body-parser');
 
 var app = express();
@@ -16,7 +17,9 @@ var config = require('./config/config');
 app.set('port', process.env.PORT || config.server_port);
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true })); 
+app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(morgan('combined', { "stream" : stream.stream }));
 
 //mysql db
 var mysql = require('mysql');
