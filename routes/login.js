@@ -1,11 +1,11 @@
 var pool;
 
-var init = function(mysqlPool){
+const init = function(mysqlPool){
     console.log('login init 호출');
     pool = mysqlPool;
 }
 
-var loginCheck = function(id, password, callback){
+const loginCheck = function(id, password, callback){
     pool.getConnection(function(err, conn){
         if(err){  
             if(conn){
@@ -62,7 +62,7 @@ var loginCheck = function(id, password, callback){
     });
 };
 
-var logincheck = function(req, res){
+const logincheck = function(req, res){
     console.log('<logincheck 호출>');
     
     var paramId = req.body.id || req.query.id;

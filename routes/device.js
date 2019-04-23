@@ -1,11 +1,11 @@
 var pool;
 
-var init = function(mysqlPool){
+const init = function(mysqlPool){
     console.log('device init 호출');
     pool = mysqlPool;
 }
 
-var addDevice = function(mobile, osVersion, model, display, manufacturer, macAddress, callback){
+const addDevice = function(mobile, osVersion, model, display, manufacturer, macAddress, callback){
     pool.getConnection(function(err, conn){
         if(err){  
             if(conn){
@@ -39,7 +39,7 @@ var addDevice = function(mobile, osVersion, model, display, manufacturer, macAdd
     });
 };
 
-var deviceCheck = function(mobile, callback){
+const deviceCheck = function(mobile, callback){
     pool.getConnection(function(err, conn){
         if(err){  
             if(conn){
@@ -71,7 +71,7 @@ var deviceCheck = function(mobile, callback){
     });
 };
 
-var deleteDevice = function(mobile, callback){
+const deleteDevice = function(mobile, callback){
     pool.getConnection(function(err, conn){
         if(err){  
             if(conn){
@@ -102,7 +102,7 @@ var deleteDevice = function(mobile, callback){
     });
 };
 
-var adddevice = function(req, res){
+const adddevice = function(req, res){
     console.log('<adddevice 호출>');
     
     var paramMobile = req.body.mobile || req.query.mobile;
@@ -151,7 +151,7 @@ var adddevice = function(req, res){
     }
 };
 
-var devicecheck = function(req, res){
+const devicecheck = function(req, res){
     console.log('<devicecheck 호출>');
     
     var paramMobile = req.body.mobile || req.query.mobile;
@@ -206,7 +206,7 @@ var devicecheck = function(req, res){
     }
 };
 
-var deletedevice = function(req, res){
+const deletedevice = function(req, res){
     console.log('<deletedevice 호출>');
     
     var paramMobile = req.body.mobile || req.query.mobile;

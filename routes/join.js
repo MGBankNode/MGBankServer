@@ -1,11 +1,11 @@
 var pool;
 
-var init = function(mysqlPool){
+const init = function(mysqlPool){
     console.log('join init 호출');
     pool = mysqlPool;
 }
 
-var response = function(res, code, message, error){
+const response = function(res, code, message, error){
     res.writeHead(code, {'Content-Type':'application/json;charset=utf8'});
 
     var data = {
@@ -18,7 +18,7 @@ var response = function(res, code, message, error){
     res.end();
 };
 
-var joinUser = function(id, password, name, phone, callback){
+const joinUser = function(id, password, name, phone, callback){
     pool.getConnection( function(err, conn) {
         
         if(err){
@@ -55,7 +55,7 @@ var joinUser = function(id, password, name, phone, callback){
 };
 
 
-var idCheck = function(id, callback){
+const idCheck = function(id, callback){
     pool.getConnection(function(err, conn){
         if(err){  
             if(conn){
@@ -87,7 +87,7 @@ var idCheck = function(id, callback){
     });
 };
 
-var joinuser = function(req, res){
+const joinuser = function(req, res){
     console.log('<joinuser> 호출 ');
     
     var paramId = req.body.id || req.query.id;
@@ -128,7 +128,7 @@ var joinuser = function(req, res){
     }
 };
 
-var idcheck = function(req, res){
+const idcheck = function(req, res){
     console.log('<idcheck 호출>');
     
     var paramId = req.body.id || req.query.id;
