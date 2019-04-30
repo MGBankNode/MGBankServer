@@ -1,59 +1,55 @@
 var pool;
 
-const init = function(mysqlPool){
-    console.log('login init 호출');
+const init = (mysqlPool) => {
+    console.log('[login init]');
     pool = mysqlPool;
 }
 
-const loginCheck = function(id, password, callback){
-    pool.getConnection(function(err, conn){
+const loginCheck = (id, password, callback) => {
+    pool.getConnection((err, conn) => {
+        
         if(err){  
             if(conn){
+                
                 conn.release();
+                
             }
+            
             callback(err, null);
             return;
         }
         
-        console.log('데이터베이스 연결 스레드 아이디 : ' + conn.threadId);
-        
         var column = ['name', 'accountCheck', 'update_at'];
-        var tablename = 'user';
 
-        var exec = conn.query("select ?? from ?? where id = ? and pw = ?", 
-                              [column, tablename, id, password], function(err, rows){
-            console.log('실행 SQL1 + ', exec.sql);
-
+        var exec = conn.query("select ?? from user where id = ? and pw = ?", 
+                              [column, id, password], 
+                              (err, rows) => {
+            console.log('실행 SQL1 = ', exec.sql);
             
             if(rows.length > 0){
-                
-                console.dir(rows);
+        
                 var data = [ id, rows[0].name, rows[0].accountCheck, rows[0].update_at];
                 
-                console.log('로그인 성공: '+ id);
-
-                var exec1 = conn.query("update ?? set update_at = CURRENT_TIMESTAMP where id = ?",
-                                  [tablename,  id], function(err, result){
+                var exec1 = conn.query("update user set update_at = CURRENT_TIMESTAMP where id = ?",
+                                        id,
+                                        (err, result) => {
                     conn.release();
-                    console.log('실행 SQL2 + ', exec1.sql);
-                    console.log(result);
+                    console.log('실행 SQL2 = ', exec1.sql);
                     
                     if(result.affectedRows > 0){
                         
-                        console.log('접속 시간 업데이트 성공');
-                        callback(null, data);
+                        callback(null, data);   //접속 시간 업데이트 성공
                         
                     }else{
-                        
-                        console.log('접속 시간 업데이트 실패');
-                        callback(null, null);
+
+                        callback(null, null);   //접속 시간 업데이트 실패
                         
                     }
                 });
                     
             }else{
+                
                 conn.release();
-                console.log('로그인 실패');
                 callback(null, null);     
                 
             }
@@ -62,22 +58,20 @@ const loginCheck = function(id, password, callback){
     });
 };
 
-const logincheck = function(req, res){
-    console.log('<logincheck 호출>');
+const logincheck = (req, res) => {
     
-    var paramId = req.body.id || req.query.id;
-    var paramPassword = req.body.password || req.query.password;
+    console.log('[logincheck] 호출');
+    
+    const { id, password } = req.body;
     
     if(pool){
         
-        loginCheck(paramId, paramPassword, function(err, rows){
+        loginCheck(id, password, function(err, rows){
             
             if(err){
                 
                 console.error('로그인 중 오류 : ' + err.stack);
-                res.writeHead('500', {'Content-Type':'application/json;charset=utf8'});
-                res.write(JSON.stringify(
-                    {
+                res.send({
                         code:'500', 
                         message:'error', 
                         error: err,
@@ -85,18 +79,13 @@ const logincheck = function(req, res){
                         name: null,
                         accountCheck: null,
                         update_at: null
-                    }));
-                res.end();
-                
+                });
                 return;
             }
             
             if(rows){
                 
-                console.dir(rows);
-                res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-                res.write(JSON.stringify(
-                    {
+                res.send({
                         code:'200', 
                         message:'success', 
                         error: null, 
@@ -104,14 +93,11 @@ const logincheck = function(req, res){
                         name: rows[1],
                         accountCheck: rows[2],
                         update_at: rows[3]
-                    }));
-                res.end();
+                });
                 
             }else{
                 
-                res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-                res.write(JSON.stringify(
-                    {
+                res.send({
                         code:'200', 
                         message:'fail', 
                         error: null,
@@ -119,8 +105,7 @@ const logincheck = function(req, res){
                         name: null,
                         accountCheck: null,
                         update_at: null
-                    }));
-                res.end();
+                });
                 
             }
             
@@ -128,9 +113,7 @@ const logincheck = function(req, res){
         
     }else{
         
-        res.writeHead('503', {'Content-Type':'application/json;charset=utf8'});
-        res.write(JSON.stringify(
-            {
+        res.send({
                 code:'503',
                 message:'db_fail', 
                 error: null, 
@@ -138,8 +121,7 @@ const logincheck = function(req, res){
                 name: null,
                 accountCheck: null,
                 update_at: null
-            }));
-        res.end();
+        });
         
     }
 };
