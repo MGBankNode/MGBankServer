@@ -1,249 +1,232 @@
 var pool;
 
-const init = function(mysqlPool){
-    console.log('device init 호출');
+const init = (mysqlPool) => {
+    console.log('[device init]');
     pool = mysqlPool;
 }
 
-const addDevice = function(mobile, osVersion, model, display, manufacturer, macAddress, callback){
-    pool.getConnection(function(err, conn){
+const addDevice = (mobile, osVersion, model, display, manufacturer, macAddress, registrationId, callback) => {
+    pool.getConnection((err, conn) => {
         if(err){  
+            
             if(conn){
+                
                 conn.release();
+                
             }
+            
             callback(err, null);
             return;
+            
         }
         
-        console.log('데이터베이스 연결 스레드 아이디 : ' + conn.threadId);
+        var reqData = 
+            {
+                mobile:mobile, 
+                osVersion:osVersion, 
+                model:model,
+                display:display,
+                manufacturer:manufacturer,
+                macAddress:macAddress,
+                registrationId:registrationId
+            };
         
-        var reqData = {mobile:mobile, osVersion:osVersion, model:model,
-                       display:display, manufacturer:manufacturer, macAddress:macAddress };
-        
-        var exec = conn.query('insert into device set ? ', reqData, 
-        
-        function(err, result){
+        var exec = conn.query('insert into device set ? ', 
+                              reqData, 
+                              (err, result) => {
             conn.release();
-            console.log('실행 SQL: ' + exec.sql);
+            console.log('실행 SQL = ' + exec.sql);
 
             if(err){
-                console.log('SQL 실행 오류');
-                console.dir(err);
-
+                
                 callback(err, null);
                 return;
+                
             }
 
             callback(null, result);
+            
         });
     });
 };
 
-const deviceCheck = function(mobile, callback){
-    pool.getConnection(function(err, conn){
+const deviceCheck = (mobile, callback) => {
+    pool.getConnection((err, conn) => {
         if(err){  
+            
             if(conn){
+                
                 conn.release();
+                
             }
+            
             callback(err, null);
             return;
+            
         }
         
-        console.log('데이터베이스 연결 스레드 아이디 : ' + conn.threadId);
-        
-        var column = ['mobile'];
-        var tablename = 'device';
-        
-        var exec = conn.query("select ?? from ?? where mobile = ?", 
-                              [column, tablename, mobile], function(err, rows){
+        var exec = conn.query("select mobile from device where mobile = ?", 
+                              mobile,
+                              (err, rows) => {
             
             conn.release();
-            console.log('실행 SQL + ', exec.sql);
+            console.log('실행 SQL = ', exec.sql);
             
             if(rows.length > 0){
-                console.log('디바이스 존재:'+ mobile);
-                callback(null, rows);
+
+                callback(null, rows);   //디바이스 존재
+                
             }else{
-                console.log('디바이스 미존재');
-                callback(null, null);
+
+                callback(null, null);   //디바이스 미존재
+                
             }
         });
     });
 };
 
-const deleteDevice = function(mobile, callback){
-    pool.getConnection(function(err, conn){
+const deleteDevice = (mobile, callback) => {
+    pool.getConnection((err, conn) => {
         if(err){  
+            
             if(conn){
+                
                 conn.release();
+                
             }
+            
             callback(err, null);
             return;
-        }
-        
-        console.log('데이터베이스 연결 스레드 아이디 : ' + conn.threadId);
-        
+            
+        }        
         
         var exec = conn.query("delete from device where mobile = ?",
-                              mobile, function(err, result){
+                              mobile, 
+                              (err, result) => {
             conn.release();
-            console.log('실행 SQL: ' + exec.sql);
+            console.log('실행 SQL = ' + exec.sql);
 
             if(err){
-                console.log('SQL 실행 오류');
-                console.dir(err);
-
+            
                 callback(err, null);
                 return;
+                
             }
 
             callback(null, result);
+            
         });
     });
 };
 
 const adddevice = function(req, res){
-    console.log('<adddevice 호출>');
+    console.log('[adddevice] 호출');
     
-    var paramMobile = req.body.mobile || req.query.mobile;
-    var paramOsVersion = req.body.osVersion || req.query.osVersion;
-    var paramModel = req.body.model || req.query.model;
-    var paramDisplay = req.body.display || req.query.display;
-    var paramManufacturer = req.body.manufacturer || req.query.manufacturer;
-    var paramMacAddress = req.body.macAddress || req.query.macAddress;
+    const { mobile, osVersion, model, display, manufacturer, macAddress, registrationId} = req.body;
     
     if(pool){
-        addDevice(paramMobile, 
-                  paramOsVersion,
-                  paramModel,
-                  paramDisplay,
-                  paramManufacturer,
-                  paramMacAddress, 
-                  function(err, addedDevice){
+        addDevice(mobile, osVersion, model, display, manufacturer, macAddress, registrationId, 
+                  (err, addedDevice) => {
             
             if(err){
                 
-                console.error('단말 정보 추가 중 오류 : ' + err.stack);
-                res.writeHead('500', {'Content-Type':'application/json;charset=utf8'});
-                res.write(JSON.stringify({code:'500', message:'error', error: err}));
-                res.end();
+                console.error('디바이스 추가 중 오류 : ' + err.stack);
+                res.send({code:'500', message:'error', error: err});
                 return;
                 
             }
             
             if(addedDevice){
-                console.dir(addedDevice);
-                res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-                res.write(JSON.stringify({code:'200', message:'success', error: null}));
-                res.end();
+
+                res.send({code:'200', message:'success', error: null});
+                
             }else{
-                res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-                res.write(JSON.stringify({code:'200', message:'fail', error: null}));
-                res.end();
+
+                res.send({code:'200', message:'fail', error: null});
+
             }
             
         });
         
     }else{
-        res.writeHead('503', {'Content-Type':'application/json;charset=utf8'});
-        res.write(JSON.stringify({code:'503', message:'db_fail', error: null}));
-        res.end();
+
+        res.send({code:'503', message:'db_fail', error: null});
+
     }
 };
 
-const devicecheck = function(req, res){
-    console.log('<devicecheck 호출>');
+const devicecheck = (req, res) => {
+    console.log('[devicecheck] 호출');
     
-    var paramMobile = req.body.mobile || req.query.mobile;
+    const { mobile } = req.body;
     
     if(pool){
-        
-        deviceCheck(paramMobile, function(err, rows){
+        deviceCheck(mobile, 
+                    (err, rows) => {
             
             if(err){
                 
                 console.error('디바이스 확인 중 오류 : ' + err.stack);
-                res.writeHead('500', {'Content-Type':'application/json;charset=utf8'});
-                res.write(JSON.stringify({code:'500', message:'error', error: err}));
-                res.end();
-                
+                res.send({code:'500', message:'error', error: err});
                 return;
             }
             
             if(rows){
                 
-                console.dir(rows);
-                res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-                res.write(JSON.stringify(
-                    {
-                        code:'200', 
-                        message:'YES', 
-                        error: null
-                    }));
-                res.end();
+                res.send({code:'200', message:'YES', error: null});
+
                 
             }else{
                 
-                res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-                res.write(JSON.stringify(
-                    {
-                        code:'200', 
-                        message:'NO', 
-                        error: null
-                    }));
-                res.end();
-                
+                res.send({code:'200', message:'NO', error: null});
+
             }
             
         });
         
     }else{
         
-        res.writeHead('503', {'Content-Type':'application/json;charset=utf8'});
-        res.write(JSON.stringify({code:'503', message:'db_fail', error: null}));
-        res.end();
+        res.send({code:'503', message:'db_fail', error: null});
         
     }
 };
 
-const deletedevice = function(req, res){
-    console.log('<deletedevice 호출>');
+const deletedevice = (req, res) => {
+    console.log('[deletedevice] 호출');
     
-    var paramMobile = req.body.mobile || req.query.mobile;
+    const { mobile } = req.body;
     
     if(pool){
-        deleteDevice(paramMobile,  
-                  function(err, deletedDevice){
+        deleteDevice(mobile,  
+                     (err, deletedDevice) => {
             
             if(err){
                 
                 console.error('단말 정보 제거 중 오류 : ' + err.stack);
-                res.writeHead('500', {'Content-Type':'application/json;charset=utf8'});
-                res.write(JSON.stringify({code:'500', message:'error', error: err}));
-                res.end();
+                res.send({code:'500', message:'error', error: err});
                 return;
                 
             }
             
             if(deletedDevice){
-                console.dir(deletedDevice);
-                res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-                res.write(JSON.stringify({code:'200', message:'success', error: null}));
-                res.end();
+
+                res.send({code:'200', message:'success', error: null});
+
             }else{
-                res.writeHead('200', {'Content-Type':'application/json;charset=utf8'});
-                res.write(JSON.stringify({code:'200', message:'fail', error: null}));
-                res.end();
+
+                res.send({code:'200', message:'fail', error: null});
+
             }
             
         });
         
     }else{
-        res.writeHead('503', {'Content-Type':'application/json;charset=utf8'});
-        res.write(JSON.stringify({code:'503', message:'db_fail', error: null}));
-        res.end();
+
+        res.send({code:'503', message:'db_fail', error: null});
+        
     }
 };
+
 
 module.exports.init = init;
 module.exports.adddevice = adddevice;

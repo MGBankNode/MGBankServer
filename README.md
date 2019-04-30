@@ -14,17 +14,15 @@ MG 새마을 금고의 어플리케이션 개발팀 Node의 Server  Repository�
 #### 사용한 외장 모듈
 
 - express
-- express-error-handler
-- express-session
 - http
 - path
-- serve-static
-- errorhandler
 - body-parser
-- cookie-parser
 - mysql
 - pm2
+- morgan
+- winston
 
 #### 설명 문서
 
 - https://github.com/MGBankNode/MGBankServer/tree/master/docs/README.md
+
