@@ -110,7 +110,7 @@ const cardName = (id, rows, callback) => {
                     
                     var cType = null;
                     
-                    if(rows[i].cNum != null){
+                    if(rows[i].cNum != ''){
                         
                         cType = cNumPair.get(rows[i].cNum);
                         
