@@ -1,4 +1,4 @@
-# Amazon web service에 웹 서버 배포
+# Amazon web service에 웹 서버 올리기
 
 #### 작성자
 
