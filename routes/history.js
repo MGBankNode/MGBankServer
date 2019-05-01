@@ -20,7 +20,9 @@ const accountHistory = (id, sDate, lDate, callback) => {
         }
         
         var data = [id, sDate, lDate];
-        var exec = conn.query("select * from aHistory where id = ? AND hDate >= ? AND hDate <= ?", 
+        var exeQuery = "select hDate, hType, hValue, hName, aBalance, cNum, (select cName from category where cId = aHistory.cId) as cName from aHistory where id = ? AND hDate >= ? AND hDate <= ?";
+        
+        var exec = conn.query(exeQuery, 
                               data,
                               (err, rows) => {
             
@@ -46,7 +48,7 @@ const accountHistory = (id, sDate, lDate, callback) => {
     });
 };
 
-const cardName = (rows, callback) => {
+const cardName = (id, rows, callback) => {
     
     var mysql = require('mysql');
     var config = require('../config/config');
@@ -64,7 +66,10 @@ const cardName = (rows, callback) => {
             
         }
         
-        var exec = conn.query("select cType, cId from card",
+        
+        var exeQuery = "select cNum, (select cType from card where cId = account_card.cId) as cType from account_card where id = ?";
+        
+        var exec = conn.query(exeQuery, id,
                               (err, cardRows) => {
             
             conn.release();
@@ -77,23 +82,48 @@ const cardName = (rows, callback) => {
             
             if(cardRows.length > 0){
                 //cId에 해당하는 이름 정보 저장
-                let cIdPair = new Map();
+                let cNumPair = new Map();
                 for(var i = 0; i < cardRows.length; ++i){
 
-                    cIdPair.set(cardRows[i].cId, cardRows[i].cType);
+                    cNumPair.set(cardRows[i].cNum, cardRows[i].cType);
 
                 }
 
                 let data = [];
             
                 for(var i = 0; i < rows.length; i++){
+                    var hType = rows[i].hType;
+                    
+                    if(hType == 0){
+                        
+                        hType = '입금';
+                        
+                    }else if(hType == 1){
+                        
+                        hType = '출금';
+                        
+                    }else if(hType == 2){
+                     
+                        hType = '카드';
+                            
+                    }
+                    
+                    var cType = null;
+                    
+                    if(rows[i].cNum != null){
+                        
+                        cType = cNumPair.get(rows[i].cNum);
+                        
+                    }
+                    
                     data[i] = {
                         hDate:rows[i].hDate,
-                        hType:rows[i].hType,
+                        hType:hType,
                         hValue:rows[i].hValue,
                         hName:rows[i].hName,
                         aBalance:rows[i].aBalance,
-                        cName:cIdPair.get(rows[i].cId)
+                        cType:cType,
+                        cName:rows[i].cName
                     }
                 }
                 
@@ -130,7 +160,7 @@ const accounthistory = (req, res) => {
                 
             }
             
-            cardName(rows,(err, data) =>{
+            cardName(id, rows, (err, data) =>{
                 if(err){
                 
                     console.error('카드 이름 조회 중 오류 : ' + err.stack);
