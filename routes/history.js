@@ -119,9 +119,9 @@ const cardName = (id, rows, callback) => {
                     data[i] = {
                         hDate:rows[i].hDate,
                         hType:hType,
-                        hValue:rows[i].hValue,
+                        hValue:(rows[i].hValue).toString(),
                         hName:rows[i].hName,
-                        aBalance:rows[i].aBalance,
+                        aBalance:(rows[i].aBalance).toString(),
                         cType:cType,
                         cName:rows[i].cName
                     }
