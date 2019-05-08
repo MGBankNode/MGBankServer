@@ -44,14 +44,15 @@ const loginCheck = (id, password, callback) => {
                             
                         }
                         
+                        
                         var data = {
                             
                             id:id,
                             name:userRows[0].name, 
                             phone:userRows[0].phone,
-                            accountCheck:userRows[0].accountCheck, 
+                            accountCheck:(userRows[0].accountCheck).toString(), 
                             update_at:userRows[0].update_at,
-                            aBalance:aBalance
+                            aBalance:aBalance.toString()
                             
                         };
                         
@@ -82,11 +83,12 @@ const loginCheck = (id, password, callback) => {
                         id:id,
                         name:userRows[0].name, 
                         phone:userRows[0].phone,
-                        accountCheck:userRows[0].accountCheck, 
+                        accountCheck:(userRows[0].accountCheck).toString(), 
                         update_at:userRows[0].update_at,
                         aBalance:null
 
                     };
+                    
 
                     var exec1 = conn.query("update user set update_at = CURRENT_TIMESTAMP where id = ?",
                                            id,

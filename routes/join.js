@@ -127,7 +127,7 @@ const idcheck = (req, res) => {
     const { id } = req.body;
     
     if(pool){
-        idCheck(paramId, (err, rows) => {
+        idCheck(id, (err, rows) => {
             if(err){
                 
                 console.error('id 확인 중 오류 : ' + err.stack);
