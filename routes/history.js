@@ -4,6 +4,106 @@ const init = (mysqlPool) => {
     console.log('[history init]');
     pool = mysqlPool;
 }
+const accountBalance = (id, callback) => {
+     pool.getConnection((err, conn) => {
+         
+        if(err){  
+            
+            if(conn){
+                
+                conn.release();
+                
+            }
+            
+            callback(err, null);
+            return;
+            
+        }
+         
+        var query = "select aBalance from aHistory where id = (select accountID from nodeDB.user where id = ?) order by hId DESC limit 1";
+        var exec= conn.query(query,
+                              id,
+                              (err, data) => {
+
+            conn.release();
+            console.log('실행 SQL = ', exec.sql);
+
+            if(err){
+
+                callback(err, null);
+                return;
+
+            }
+
+            if(data.length > 0){
+
+                callback(null, data);
+
+            }
+            else{
+                
+                callback(null, null);
+                
+            }
+
+        });
+     });
+    
+};
+
+const accountbalance = (req, res) => {
+    
+    console.log('[accountbalance] 호출');
+    
+    const { id } = req.body;
+    
+    if(pool){
+        accountBalance(id, (err, rows) => {
+            if(err){
+                
+                console.error('잔액 조회 중 오류 : ' + err.stack);
+                res.send({
+                    code: '500',
+                    message: 'error',
+                    error: err,
+                    aBalance: null
+                });
+                return;
+                
+            }
+
+            if(rows){
+                
+                res.send({
+                    code: '500',
+                    message: 'success',
+                    error: err,
+                    aBalance: (rows[0].aBalance).toString()
+                });
+                
+            }else{
+                
+                res.send({
+                    code: '500',
+                    message: 'fail',
+                    error: err,
+                    aBalance: null
+                });
+                
+            }
+        });
+        
+    }else{
+        
+        res.send({
+            code: '503',
+            message: 'db_fail',
+            error: null,
+            aBalance: null
+        });     
+        
+    }
+};
 
 const accountHistory = (id, sDate, lDate, callback) => {
     pool.getConnection((err, conn) => {
@@ -20,7 +120,7 @@ const accountHistory = (id, sDate, lDate, callback) => {
         }
         
         var data = [id, sDate, lDate];
-        var exeQuery = "select hDate, hType, hValue, hName, aBalance, cNum, (select cName from category where cId = aHistory.cId) as cName from aHistory where id = ? AND hDate >= ? AND hDate <= ?";
+        var exeQuery = "select hDate, hType, hValue, hName, aBalance, cNum, (select cName from category where cId = aHistory.cId) as cName from aHistory where id = (select accountID from nodeDB.user where id = ?) AND hDate >= ? AND hDate <= ?";
         
         var exec = conn.query(exeQuery, 
                               data,
@@ -67,7 +167,7 @@ const cardName = (id, rows, callback) => {
         }
         
         
-        var exeQuery = "select cNum, (select cType from card where cId = account_card.cId) as cType from account_card where id = ?";
+        var exeQuery = "select cNum, (select cType from card where cId = account_card.cId) as cType from account_card where id = (select accountID from nodeDB.user where id = ?)";
         
         var exec = conn.query(exeQuery, id,
                               (err, cardRows) => {
@@ -199,3 +299,4 @@ const accounthistory = (req, res) => {
 
 module.exports.init = init;
 module.exports.accounthistory = accounthistory;
+module.exports.accountbalance = accountbalance;

@@ -9,11 +9,12 @@ const accountCheckUpdate = (result, conn, id, callback) => {
     if(result.length > 0){      //은행쪽 아이디 존재시, 계좌등록 위한 accountCheck 값 update
                 
         var accountDB_ID = result[0].id;
+        
 
-        var execQuery2 = 'update nodeDB.user set accountCheck=1 WHERE id = ?';
+        var execQuery2 = "update nodeDB.user set accountCheck=1 WHERE id = '" + id + "';";
+        execQuery2 += "update nodeDB.user set accountID=" + accountDB_ID + " WHERE id = '" + id +"';";
 
-        var exec2 = conn.query(execQuery2, 
-                               id, 
+        var exec2 = conn.query(execQuery2,
                                (err2, result2) => {
             console.log('실행 SQL2 = ' + exec2.sql);
 
@@ -24,7 +25,7 @@ const accountCheckUpdate = (result, conn, id, callback) => {
                 return;
 
             }
-
+            
             categoryInsert(result2, conn, accountDB_ID, callback);
 
         });
@@ -39,7 +40,7 @@ const accountCheckUpdate = (result, conn, id, callback) => {
 };
 
 const categoryInsert = (result, conn, accountDB_ID, callback) => {
-    if(result.affectedRows > 0){   //accountCheck 값 update 성공
+    if((result[0].affectedRows) > 0 && (result[1].affectedRows > 0)){   //accountCheck 값 update 성공
                         
         var execQuery3 = 'insert into nodeDB.defaultCategory(store, cId) select DISTINCT hName, 11 from accountDB.aHistory where accountDB.aHistory.id = ? and accountDB.aHistory.hType=2 and aHistory.hName not in (select store from nodeDB.defaultCategory)';
 
@@ -55,7 +56,7 @@ const categoryInsert = (result, conn, accountDB_ID, callback) => {
                 return;
 
             }
-
+            console.dir(result3);
             updateCaweight(result3, conn, accountDB_ID, callback);
 
         });
@@ -87,6 +88,7 @@ const updateCaweight = (result, conn, accountDB_ID, callback) => {
 
             }
 
+            console.dir(result4);
             callInsertData(result4, conn, accountDB_ID, callback);
 
         });
@@ -115,7 +117,7 @@ const callInsertData = (result, conn, accountDB_ID, callback) => {
                 return;
 
             }
-
+            console.dir(result5);
             historyInsert(result5, conn, accountDB_ID, callback);
 
         });
@@ -149,7 +151,8 @@ const  historyInsert = (result, conn, accountDB_ID, callback) => {
                     callback(Nerr, null);
                     return;
                 }
-
+            
+            console.dir(Nresult);
         });
 
     }
@@ -171,7 +174,7 @@ const  historyInsert = (result, conn, accountDB_ID, callback) => {
         }
 
         if(result6){        //nodeDB로 내역 추가 성공
-
+            console.dir(result6);
             callback(null, "success");
 
         }
@@ -220,7 +223,7 @@ const addAccount = (id, callback) => {
     });
 };
 
-const addaccount = function(req, res){
+const addaccount = (req, res) => {
     console.log('[addaccount] 호출');
     
     const { id } = req.body;
