@@ -4,6 +4,7 @@ const init = (mysqlPool) => {
     console.log('[history init]');
     pool = mysqlPool;
 }
+
 const accountBalance = (id, callback) => {
      pool.getConnection((err, conn) => {
          
@@ -105,6 +106,8 @@ const accountbalance = (req, res) => {
     }
 };
 
+
+
 const accountHistory = (id, sDate, lDate, callback) => {
     pool.getConnection((err, conn) => {
         if(err){  
@@ -119,8 +122,9 @@ const accountHistory = (id, sDate, lDate, callback) => {
             
         }
         
+        
         var data = [id, sDate, lDate];
-        var exeQuery = "select hDate, hType, hValue, hName, aBalance, cNum, (select cName from category where cId = aHistory.cId) as cName from aHistory where id = (select accountID from nodeDB.user where id = ?) AND hDate >= ? AND hDate <= ?";
+        var exeQuery = "select hDate, hType, hValue, hName, aBalance, (select cType from accountDB.card where cId = (select cId from accountDB.account_card where cNum = nodeDB.aHistory.cNum)) as cType, cName from nodeDB.aHistory, nodeDB.category where id = (select accountID from nodeDB.user where id = ?) AND hDate>=? AND hDate<=? AND nodeDB.aHistory.cId=nodeDB.category.cId";
         
         var exec = conn.query(exeQuery, 
                               data,
@@ -148,98 +152,6 @@ const accountHistory = (id, sDate, lDate, callback) => {
     });
 };
 
-const cardName = (id, rows, callback) => {
-    
-    var mysql = require('mysql');
-    var config = require('../config/config');
-    var pool2 = mysql.createPool(config.mysql_set[1]);
-    
-    pool2.getConnection((err, conn) => {
-        if(err){  
-            if(conn){
-                
-                conn.release();
-                
-            }
-            
-            return;
-            
-        }
-        
-        
-        var exeQuery = "select cNum, (select cType from card where cId = account_card.cId) as cType from account_card where id = (select accountID from nodeDB.user where id = ?)";
-        
-        var exec = conn.query(exeQuery, id,
-                              (err, cardRows) => {
-            
-            conn.release();
-            console.log('실행 SQL = ', exec.sql);
-            
-            if(err){
-                callback(err, null);
-                return;
-            }
-            
-            if(cardRows.length > 0){
-                //cId에 해당하는 이름 정보 저장
-                let cNumPair = new Map();
-                for(var i = 0; i < cardRows.length; ++i){
-
-                    cNumPair.set(cardRows[i].cNum, cardRows[i].cType);
-
-                }
-
-                let data = [];
-            
-                for(var i = 0; i < rows.length; i++){
-                    var hType = rows[i].hType;
-                    
-                    if(hType == 0){
-                        
-                        hType = '입금';
-                        
-                    }else if(hType == 1){
-                        
-                        hType = '출금';
-                        
-                    }else if(hType == 2){
-                     
-                        hType = '카드';
-                            
-                    }
-                    
-                    var cType = null;
-                    
-                    if(rows[i].cNum != ''){
-                        
-                        cType = cNumPair.get(rows[i].cNum);
-                        
-                    }
-                    
-                    data[i] = {
-                        hDate:rows[i].hDate,
-                        hType:hType,
-                        hValue:(rows[i].hValue).toString(),
-                        hName:rows[i].hName,
-                        aBalance:(rows[i].aBalance).toString(),
-                        cType:cType,
-                        cName:rows[i].cName
-                    }
-                }
-                
-                callback(err, data);
-                
-            }
-            else{
-                
-                callback(null, null);
-                
-            }
-                
-        });
-    });
-};
-
 const accounthistory = (req, res) => {
     console.log('[accounthistory] 호출');
     
@@ -254,34 +166,120 @@ const accounthistory = (req, res) => {
                     code: '500',
                     message: 'error',
                     error: err,
-                    history: null
+                    history: null,
+                    daily_history:null
                 });
                 return;
                 
             }
             
-            cardName(id, rows, (err, data) =>{
-                if(err){
+            if(rows){
                 
-                    console.error('카드 이름 조회 중 오류 : ' + err.stack);
-                    res.send({
-                        code: '500',
-                        message: 'error',
-                        error: err,
-                        history: null
-                    });
-                    return;
+                let data = [];
+                let daily_data = [];
                 
+                var prevDay = '';
+                var benefit = 0;
+                var loss = 0;
+                
+                var j = 0;
+                
+                for(var i = 0; i < rows.length; i++){
+                    
+                    var hDate = (rows[i].hDate).toString();
+                    var curDay = hDate.substr(8, 2);
+                    var hType = rows[i].hType;
+                    
+                    if(prevDay == ''){
+                        
+                        prevDay = curDay;
+                        
+                    }
+                    
+                    //현재 날짜 보다 큰 경우, 처음부터 시작
+                    if((curDay * 1) > (prevDay * 1)){
+                        
+                        daily_data[j] = {
+                            day:prevDay,
+                            benefit:benefit.toString(),
+                            loss:loss.toString()
+                        };
+                        
+                        ++j;
+                        
+                        benefit = 0;
+                        loss = 0;
+                        
+                    }
+                        
+                    if(hType == 0){
+
+                        hType = '입금';
+                        benefit += rows[i].hValue;
+
+                    }else if(hType == 1){
+
+                        hType = '출금';
+                        loss += rows[i].hValue;
+
+                    }else if(hType == 2){
+
+                        hType = '카드';
+                        loss += rows[i].hValue;
+
+                    }
+                    
+                    
+                    prevDay = curDay;
+                    
+                    if((i + 1) == rows.length){
+                        
+                        daily_data[j] = {
+                            day:prevDay,
+                            benefit:benefit.toString(),
+                            loss:loss.toString()
+                        };
+                        
+                    }
+                    
+                    data[i] = {
+                        hDate:rows[i].hDate,
+                        hType:hType,
+                        hValue:(rows[i].hValue).toString(),
+                        hName:rows[i].hName,
+                        aBalance:(rows[i].aBalance).toString(),
+                        cType:rows[i].cType,
+                        cName:rows[i].cName
+                    }
                 }
+                
+                console.dir({
+                    code: '500',
+                    message: 'success',
+                    error: err,
+                    history: data,
+                    daily_history:daily_data
+                });
                 
                 res.send({
                     code: '500',
                     message: 'success',
                     error: err,
-                    history: data
+                    history: data,
+                    daily_history:daily_data
                 });
                 
-            });
+            }else{
+                
+                res.send({
+                    code: '500',
+                    message: 'fail',
+                    error: err,
+                    history: null,
+                    daily_history: null
+                });
+                
+            }
  
         });
         
