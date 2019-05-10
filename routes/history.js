@@ -106,6 +106,115 @@ const accountbalance = (req, res) => {
     }
 };
 
+const accountHomeHistory = (id, sDate, lDate, callback) => {
+    pool.getConnection((err, conn) => {
+        if(err){ 
+            
+            if(conn){
+                
+                conn.release();
+                
+            }
+            
+            callback(err, null);
+            return;
+            
+        }
+        
+        var data = [id, sDate, lDate];
+        var exeQuery = "select hValue, hName, cName from nodeDB.aHistory, nodeDB.category where id = (select accountID from nodeDB.user where id = ?) AND hDate>=? AND hDate<=? AND nodeDB.aHistory.cId=nodeDB.category.cId";
+        
+        var exec = conn.query(exeQuery, 
+                              data,
+                              (err, rows) => {
+            
+            conn.release();
+            console.log('실행 SQL = ', exec.sql);
+            
+            if(err){
+                
+                callback(err, null);
+                return;
+            }
+            
+            if(rows.length > 0){
+                
+                callback(null, rows);
+                
+            }else{
+
+                callback(null, null);   //사용 가능 아이디
+                
+            }
+        });
+        
+    });
+};
+
+const accounthomehistory = (req, res) => {
+    console.log('[accounthomehistory] 호출');
+    
+    const { id, sDate, lDate } = req.body;
+    
+    if(pool){
+        accountHomeHistory(id, sDate, lDate, (err, rows) => {
+            if(err){
+                
+                console.error('내역 조회 중 오류 : ' + err.stack);
+                res.send({
+                    code: '500',
+                    message: 'error',
+                    error: err,
+                    history: null
+                });
+                return;
+                
+            }
+            
+            if(rows){
+                
+                let data = [];
+                for(var i = 0; i < rows.length; ++i){
+                    
+                    data[i] = {
+                        hValue:(rows[i].hValue).toString(),
+                        hName:rows[i].hName,
+                        cName:rows[i].cName
+                    };
+                    
+                }
+                
+                res.send({
+                    code: '500',
+                    message: 'success',
+                    error: err,
+                    history: data
+                });
+                
+            }else{
+                
+                res.send({
+                    code: '500',
+                    message: 'fail',
+                    error: err,
+                    history: null
+                });
+                
+            }
+ 
+        });
+        
+    }else{
+        
+        res.send({
+            code: '503',
+            message: 'db_fail',
+            error: null,
+            history: null
+        });     
+        
+    }
+};
 
 
 const accountHistory = (id, sDate, lDate, callback) => {
@@ -289,7 +398,8 @@ const accounthistory = (req, res) => {
             code: '503',
             message: 'db_fail',
             error: null,
-            history: null
+            history: null,
+            daily_history: null
         });     
         
     }
@@ -298,3 +408,4 @@ const accounthistory = (req, res) => {
 module.exports.init = init;
 module.exports.accounthistory = accounthistory;
 module.exports.accountbalance = accountbalance;
+module.exports.accounthomehistory = accounthomehistory;
