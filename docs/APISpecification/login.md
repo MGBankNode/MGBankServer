@@ -44,10 +44,13 @@
         "code" : "200",
         "message" : "success",
         "error" : null,
-        "id" : "testID",
-        "name" : "testUserName",
-        "accountCheck" : NUM(0/1),
-        "update_at" : TIME
+        "data" : {
+            "id" : "testID",
+            "name" : "testUserName",
+            "accountCheck" : NUM(0/1),
+            "update_at" : TIME,
+            "aBalance" : "accountBalance"/null
+        }
     }
     ```
 
@@ -58,10 +61,7 @@
         "code" : "200",
         "message" : "fail",
         "error" : null,
-        "id" : null,
-        "name" : null,
-        "accountCheck" : null,
-        "update_at" : null
+        "data" : null
     }
     ```
 
@@ -72,10 +72,7 @@
         "code" : "503",
         "message" : "db_fail",
         "error" : null,
-        "id" : null,
-        "name" : null,
-        "accountCheck" : null,
-        "update_at" : null
+        "data" : null
     }
     ```
 
@@ -86,10 +83,7 @@
         "code" : "500",
         "message" : "error",
     	"error" : "errorMessage",
-        "id" : null,
-        "name" : null,
-        "accountCheck" : null,
-        "update_at" : null
+        "data" : null
     }
     ```
 

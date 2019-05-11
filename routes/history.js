@@ -36,7 +36,7 @@ const accountBalance = (id, callback) => {
 
             }
 
-            if(data.length > 0){
+            if(data 0){
 
                 callback(null, data);
 
@@ -122,7 +122,7 @@ const accountHomeHistory = (id, sDate, lDate, callback) => {
         }
         
         var data = [id, sDate, lDate];
-        var exeQuery = "select hValue, hName, cName from nodeDB.aHistory, nodeDB.category where id = (select accountID from nodeDB.user where id = ?) AND hDate>=? AND hDate<=? AND nodeDB.aHistory.cId=nodeDB.category.cId";
+        var exeQuery = "select hValue, hName, cName from nodeDB.aHistory, nodeDB.category where id = (select accountID from nodeDB.user where id = ?) AND hDate>=? AND hDate<? AND (nodeDB.aHistory.hType = 1 OR nodeDB.aHistory.hType = 2) AND nodeDB.aHistory.cId=nodeDB.category.cId";
         
         var exec = conn.query(exeQuery, 
                               data,
@@ -137,7 +137,7 @@ const accountHomeHistory = (id, sDate, lDate, callback) => {
                 return;
             }
             
-            if(rows.length > 0){
+            if(rows 0){
                 
                 callback(null, rows);
                 
@@ -233,7 +233,7 @@ const accountHistory = (id, sDate, lDate, callback) => {
         
         
         var data = [id, sDate, lDate];
-        var exeQuery = "select hDate, hType, hValue, hName, aBalance, (select cType from accountDB.card where cId = (select cId from accountDB.account_card where cNum = nodeDB.aHistory.cNum)) as cType, cName from nodeDB.aHistory, nodeDB.category where id = (select accountID from nodeDB.user where id = ?) AND hDate>=? AND hDate<=? AND nodeDB.aHistory.cId=nodeDB.category.cId";
+        var exeQuery = "select hDate, hType, hValue, hName, aBalance, (select cType from accountDB.card where cId = (select cId from accountDB.account_card where cNum = nodeDB.aHistory.cNum)) as cType, cName from nodeDB.aHistory, nodeDB.category where id = (select accountID from nodeDB.user where id = ?) AND hDate>=? AND hDate<? AND nodeDB.aHistory.cId=nodeDB.category.cId";
         
         var exec = conn.query(exeQuery, 
                               data,
@@ -248,7 +248,7 @@ const accountHistory = (id, sDate, lDate, callback) => {
                 return;
             }
             
-            if(rows.length > 0){
+            if(rows 0){
                 
                 callback(null, rows);
                 
@@ -361,14 +361,6 @@ const accounthistory = (req, res) => {
                         cName:rows[i].cName
                     }
                 }
-                
-                console.dir({
-                    code: '500',
-                    message: 'success',
-                    error: err,
-                    history: data,
-                    daily_history:daily_data
-                });
                 
                 res.send({
                     code: '500',
