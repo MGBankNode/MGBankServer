@@ -36,7 +36,7 @@ const accountBalance = (id, callback) => {
 
             }
 
-            if(data 0){
+            if(data){
 
                 callback(null, data);
 
@@ -137,7 +137,7 @@ const accountHomeHistory = (id, sDate, lDate, callback) => {
                 return;
             }
             
-            if(rows 0){
+            if(rows){
                 
                 callback(null, rows);
                 
@@ -248,7 +248,7 @@ const accountHistory = (id, sDate, lDate, callback) => {
                 return;
             }
             
-            if(rows 0){
+            if(rows){
                 
                 callback(null, rows);
                 
