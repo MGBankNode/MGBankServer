@@ -122,7 +122,7 @@ const accountHomeHistory = (id, sDate, lDate, callback) => {
         }
         
         var data = [id, sDate, lDate];
-        var exeQuery = "select hValue, hName, cName from nodeDB.aHistory, nodeDB.category where id = (select accountID from nodeDB.user where id = ?) AND hDate>=? AND hDate<? AND (nodeDB.aHistory.hType = 1 OR nodeDB.aHistory.hType = 2) AND nodeDB.aHistory.cId=nodeDB.category.cId";
+        var exeQuery = "select hId, hDate, hValue, hName, cName from nodeDB.aHistory, nodeDB.category where id = (select accountID from nodeDB.user where id = ?) AND hDate>=? AND hDate<? AND (nodeDB.aHistory.hType = 1 OR nodeDB.aHistory.hType = 2) AND nodeDB.aHistory.cId=nodeDB.category.cId";
         
         var exec = conn.query(exeQuery, 
                               data,
@@ -177,6 +177,8 @@ const accounthomehistory = (req, res) => {
                 for(var i = 0; i < rows.length; ++i){
                     
                     data[i] = {
+                        hId:(rows[i].hId).toString(),
+                        hDate:(rows[i].hDate).toString(),
                         hValue:(rows[i].hValue).toString(),
                         hName:rows[i].hName,
                         cName:rows[i].cName
@@ -233,7 +235,7 @@ const accountHistory = (id, sDate, lDate, callback) => {
         
         
         var data = [id, sDate, lDate];
-        var exeQuery = "select hDate, hType, hValue, hName, aBalance, (select cType from accountDB.card where cId = (select cId from accountDB.account_card where cNum = nodeDB.aHistory.cNum)) as cType, cName from nodeDB.aHistory, nodeDB.category where id = (select accountID from nodeDB.user where id = ?) AND hDate>=? AND hDate<? AND nodeDB.aHistory.cId=nodeDB.category.cId";
+        var exeQuery = "select hId, hDate, hType, hValue, hName, aBalance, (select cType from accountDB.card where cId = (select cId from accountDB.account_card where cNum = nodeDB.aHistory.cNum)) as cType, cName from nodeDB.aHistory, nodeDB.category where id = (select accountID from nodeDB.user where id = ?) AND hDate>=? AND hDate<? AND nodeDB.aHistory.cId=nodeDB.category.cId";
         
         var exec = conn.query(exeQuery, 
                               data,
@@ -352,6 +354,7 @@ const accounthistory = (req, res) => {
                     }
                     
                     data[i] = {
+                        hId :(rows[i].hId).toString(),
                         hDate:rows[i].hDate,
                         hType:hType,
                         hValue:(rows[i].hValue).toString(),
