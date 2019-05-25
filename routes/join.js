@@ -30,7 +30,7 @@ const joinUser = (id, password, name, phone, callback) => {
         }
         
         var barcode = "";
-        CreateBarcord(phone, (result) =>{
+        CreateBarcode(phone, (result) =>{
             
              barcode = result;
             

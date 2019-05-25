@@ -61,7 +61,8 @@ const loginCheck = (id, password, callback) => {
                             aBalance = historyRows[0].aBalance;
                             
                         }
-                        
+                    
+                        console.log(userRows[0].update_at);
                         
                         var data = {
                             

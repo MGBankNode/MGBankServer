@@ -18,8 +18,7 @@ const updateCategory = (id, hId, prev, cur, callback) => {
             callback(err, null);
             return;
         }
-        prev = '2';
-        cur = '3';
+
         var query1 = "update aHistory set cId='" + cur + "' where id = (select accountID from user where id = '" + id + "') AND hName = (select * from (select hName from aHistory where hId = '" + hId + "')as X);";
         
         var query2 = "update caweight SET weight=weight-1 where cId='" + prev +"' AND store=(select hName from aHistory where hId = '" + hId + "') AND cId<>11;";
@@ -44,10 +43,10 @@ const updateCategory = (id, hId, prev, cur, callback) => {
             
             if(results){
         
-                console.dir(results[0]);
-                console.dir(results[1]);
-                console.dir(results[2]);
-                console.dir(results[3]);
+                //console.dir(results[0]);
+                //console.dir(results[1]);
+                //console.dir(results[2]);
+                //console.dir(results[3]);
                 callback(null, results);
                     
             }else{
@@ -81,8 +80,8 @@ const updatecategory = (req, res) => {
                 return;
             }
             
-            if(results[0].affectedRows && results[1].affectedRows 
-               && results[2].affectedRows && results[3] ){
+            if(results[0].affectedRows && results[1]
+               && results[2] && results[3] ){
                 
                 res.send({
                         code:'200', 

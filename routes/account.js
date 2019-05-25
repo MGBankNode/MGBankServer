@@ -56,7 +56,7 @@ const categoryInsert = (result, conn, accountDB_ID, callback) => {
                 return;
 
             }
-            console.dir(result3);
+            //console.dir(result3);
             updateCaweight(result3, conn, accountDB_ID, callback);
 
         });
@@ -88,7 +88,7 @@ const updateCaweight = (result, conn, accountDB_ID, callback) => {
 
             }
 
-            console.dir(result4);
+            //console.dir(result4);
             callInsertData(result4, conn, accountDB_ID, callback);
 
         });
@@ -117,7 +117,7 @@ const callInsertData = (result, conn, accountDB_ID, callback) => {
                 return;
 
             }
-            console.dir(result5);
+            //console.dir(result5);
             historyInsert(result5, conn, accountDB_ID, callback);
 
         });
@@ -152,13 +152,13 @@ const  historyInsert = (result, conn, accountDB_ID, callback) => {
                     return;
                 }
             
-            console.dir(Nresult);
+            //console.dir(Nresult);
         });
 
     }
 
 
-    var execQuery6 = "insert into nodeDB.aHistory(hId, hDate, hType, hValue, hName, id, aBalance, cNum, aNum, cId) (SELECT hId, hDate, hType, hValue, hName, id, aBalance, cNum, aNum, cId FROM accountDB.aHistory, nodeDB.defaultCategory WHERE id=? AND CASE accountDB.aHistory.hType WHEN 0 THEN nodeDB.defaultCategory.store='계좌입금' WHEN 1 THEN nodeDB.defaultCategory.store='계좌출금' WHEN 2 THEN accountDB.aHistory.hName=nodeDB.defaultCategory.store END)";
+    var execQuery6 = "insert into nodeDB.aHistory(hDate, hType, hValue, hName, id, aBalance, cNum, aNum, cId) (SELECT hDate, hType, hValue, hName, id, aBalance, cNum, aNum, cId FROM accountDB.aHistory, nodeDB.defaultCategory WHERE id=? AND CASE accountDB.aHistory.hType WHEN 0 THEN nodeDB.defaultCategory.store='계좌입금' WHEN 1 THEN nodeDB.defaultCategory.store='계좌출금' WHEN 2 THEN accountDB.aHistory.hName=nodeDB.defaultCategory.store END)";
 
     var exec6 = conn.query(execQuery6, 
                            accountDB_ID,
@@ -174,7 +174,7 @@ const  historyInsert = (result, conn, accountDB_ID, callback) => {
         }
 
         if(result6){        //nodeDB로 내역 추가 성공
-            console.dir(result6);
+            //console.dir(result6);
             callback(null, "success");
 
         }
@@ -274,7 +274,181 @@ const addaccount = (req, res) => {
     }
 };
 
+const accountRefresh = (id, conn, callback) => {    
+    var query1 = "INSERT INTO nodeDB.defaultCategory(store, cId) SELECT DISTINCT hName, 11 FROM accountDB.aHistory WHERE accountDB.aHistory.id = " + id + " AND accountDB.aHistory.hId > (select hId from accountDB.aHistory where id = " + id + " AND hDate = (select hDate from nodeDB.aHistory where hType<>3 AND id = " + id + " order by hDate DESC Limit 1) AND hName = (select hName from nodeDB.aHistory where hType<>3 AND id = " + id + " order by hDate DESC Limit 1)) AND accountDB.aHistory.hType=2 AND accountDB.aHistory.hName NOT IN (SELECT store FROM nodeDB.defaultCategory);";
+
+    var query2 = "UPDATE nodeDB.caweight, (SELECT DISTINCT store, cId FROM nodeDB.defaultCategory WHERE nodeDB.defaultCategory.store IN (SELECT hName FROM accountDB.aHistory WHERE accountDB.aHistory.id = " + id + " AND accountDB.aHistory.hType=2) AND nodeDB.defaultCategory.store NOT IN (SELECT hName FROM nodeDB.aHistory WHERE nodeDB.aHistory.id= '" + id + "')) AS a SET weight = weight+1 WHERE a.store = nodeDB.caweight.store AND a.cId = nodeDB.caweight.cId;"
+
+    var query3 = "SELECT DISTINCT store FROM nodeDB.defaultCategory WHERE nodeDB.defaultCategory.store NOT IN (SELECT store FROM nodeDB.caweight);";
+
+
+    var exec1 = conn.query(query1 + query2 + query3,
+                          (err1, result) => {
+
+        console.log('실행 SQL1 = ' + exec1.sql);
+
+        if(err1){
+
+            conn.release();
+            callback(err1, null);
+            return;
+
+        }
+
+        //console.dir(result[0]);
+        //console.dir(result[1]);
+        //console.dir(result[2]);
+
+        if(result[0] && result[1] && result[2]){
+
+            var re = result[2];
+            if(re.length > 0){
+
+                var Nquery = "";
+
+                for(var i = 0; i < re.length; ++i){
+
+                    Nquery += "call nodeDB.insertData('" + re[i].store + "');";
+
+                }
+
+                var Nexec = conn.query(Nquery, (Nerr, Nresult) =>{
+
+                        console.log('실행 SQL= ' + Nexec.sql);
+                        if(Nerr){
+
+                            conn.release();
+                            callback(Nerr, null);
+                            return;
+                        }
+
+                    console.dir(Nresult);
+                });
+
+            }
+
+
+
+            var query5 = "INSERT INTO nodeDB.aHistory(hDate, hType, hValue, hName, id, aBalance, cNum, aNum, cId) (SELECT hDate, hType, hValue, hName, id, aBalance, cNum, aNum, cId FROM accountDB.aHistory, nodeDB.defaultCategory WHERE id= " + id + " AND accountDB.aHistory.hId > (select hId from accountDB.aHistory where id = " + id + " AND hDate = (select hDate from nodeDB.aHistory where hType<>3 AND id = " + id + " order by hDate DESC Limit 1) AND hName = (select hName from nodeDB.aHistory where hType<>3 AND id = " + id + " order by hDate DESC Limit 1)) AND CASE accountDB.aHistory.hType WHEN 0 THEN nodeDB.defaultCategory.store='계좌입금' WHEN 1 THEN nodeDB.defaultCategory.store='계좌출금' WHEN 2 THEN accountDB.aHistory.hName=nodeDB.defaultCategory.store END);"
+
+            var query6 = "UPDATE nodeDB.aHistory, (SELECT DISTINCT nodeDB.aHistory.hName as hName, nodeDB.aHistory.cId as cId FROM nodeDB.aHistory, nodeDB.defaultCategory WHERE id=" + id + " AND hType=2 AND nodeDB.aHistory.hName = nodeDB.defaultCategory.store AND nodeDB.aHistory.cId <> nodeDB.defaultCategory.cId) as A SET nodeDB.aHistory.cId = A.cId WHERE nodeDB.aHistory.hName = A.hName;"
+
+            var exec2 = conn.query(query5 + query6,
+                          (err, result) => {
+
+                conn.release();
+                console.log('실행 SQL = ' + exec2.sql);
+
+                if(err){
+
+                    callback(err, null);
+                    return;
+
+                }
+
+                if(result[0] && result[1]){
+
+                    //console.dir(result[0]);
+                    //console.dir(result[1]);
+                    callback(null, "success");
+
+                }else{
+
+                    callback(null, null);
+
+                }
+            });
+
+        }else{
+
+            callback(null, null);
+
+        }
+    });
+};
+
+const getAccountID = (id, callback) => {
+    pool.getConnection((err, conn) => {
+        if(err){  
+            
+            if(conn){
+                
+                conn.release();
+                
+            }
+            
+            callback(err, null);
+            return;
+            
+        }
+        
+        var query1 = "select accountID from user where id = '" + id + "';";
+        
+        var exec1 = conn.query(query1,
+                              (err1, result) => {
+            console.log('실행 SQL1 = ' + exec1.sql);
+            
+            if(err1){
+                
+                conn.release();
+                callback(err1, null);
+                return;
+                
+            }
+
+            if(result){
+                
+                accountRefresh(result[0].accountID, conn, callback);
+                
+            }
+            else{
+                
+                callback(null, null);
+                
+            }
+        });
+    });
+    
+};
+
+const accountrefresh = (req, res) => {
+    console.log('[accountrefresh] 호출');
+    
+    const { id } = req.body;
+    
+    if(pool){
+        getAccountID(id, (err, data) => {
+            if(err){
+                
+                console.error('새로고침 중 오류 : ' + err.stack);
+                res.send({code:'500', message:'error', error: err});
+                
+                return;
+                
+            }
+            
+            if(data == "success"){
+                
+                res.send({code:'200', message:'success', error: 'null'});
+                
+            }
+            else{
+                
+                res.send({code:'200', message:'fail', error: 'null'});
+                
+            }
+            
+        });
+        
+    }else{
+
+        res.send({code:'503', message:'db_fail', error: 'null'});
+
+    }
+};
+
 
 
 module.exports.init = init;
 module.exports.addaccount = addaccount;
+module.exports.accountrefresh = accountrefresh;

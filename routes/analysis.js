@@ -21,6 +21,7 @@ const analysisWeek = (id, dates, callback) => {
             
         }
         
+       // id = 'b';
         var datesArray = (dates.toString()).split(',');
         var weekCount = (datesArray.length - 1);
         var query = '';
@@ -91,7 +92,7 @@ const analysisDaily = (id, sDate, lDate, callback) => {
             callback(err, null);
             return;
         }
-        
+       // id = 'b';
         let queryData = [ id, sDate, lDate ];
         
         var query = "select hDate, hValue from aHistory where id = (select accountID from user where id = ?) AND hDate>=? AND hDate<? AND (hType = 1 OR hType = 2)"
@@ -114,23 +115,26 @@ const analysisDaily = (id, sDate, lDate, callback) => {
             var dailySum = 0;
             
             var prevDay = '';
-                
+            var preDate = '';
+            
             for(var i = 0; i < result.length; i++){
-
+                
                 var hDate = (result[i].hDate).toString();
+                //console.dir(hDate);
                 var curDay = hDate.substr(8, 2);
-
+                
+                //console.log(curDay);
                 if(prevDay == ''){
 
                     prevDay = curDay;
-
+                    preDate = hDate;
                 }
 
                 //날짜가 다른 경우
                 if(curDay != prevDay){
 
                     dailyPattern[daily] = {
-                        daily:(daily + 1).toString(),
+                        daily:((new Date(preDate).getDay()) + 1).toString(),
                         dailySum:dailySum.toString()
                     };
 
@@ -143,11 +147,12 @@ const analysisDaily = (id, sDate, lDate, callback) => {
                 
                 dailySum += result[i].hValue;
                 prevDay = curDay;
+                preDate = hDate;
 
                 if((i + 1) == result.length){
 
                     dailyPattern[daily] = {
-                        daily:hDate.substr(0, 10),
+                        daily:((new Date(preDate).getDay()) + 1).toString(),
                         dailySum:dailySum.toString()
                     };
 
@@ -176,7 +181,7 @@ const analysisdaily = (req, res) => {
                 return;
                 
             }
-                
+            console.dir(results);   
             res.send({code:'200', message:'success', error: null, dailyPattern:results});
             
         });
