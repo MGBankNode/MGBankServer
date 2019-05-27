@@ -4,7 +4,25 @@ const init = (mysqlPool) => {
     console.log('[login init]');
     pool = mysqlPool;
 }
+const userTimeUpdate = (data, id, conn, callback) => {
+    var exec2 = conn.query("update user set update_at = CURRENT_TIMESTAMP where id = ?",
+                           id,
+                           (err, result) => {
 
+        conn.release();
+        console.log('실행 SQL2 = ', exec2.sql);
+
+        if(result.affectedRows > 0){
+
+            callback(null, data);   //접속 시간 업데이트 성공
+
+        }else{
+
+            callback(null, null);   //접속 시간 업데이트 실패
+
+        }
+    });    
+};
 const loginCheck = (id, password, callback) => {
     pool.getConnection((err, conn) => {
         
@@ -30,7 +48,7 @@ const loginCheck = (id, password, callback) => {
         
                 if(userRows[0].accountCheck == 1){
                     
-                    var exeQuery2 = "select aBalance from aHistory where id = ? order by hId DESC limit 1";
+                    var exeQuery2 = "select aBalance from aHistory where id = (select accountID from nodeDB.user where id = ?) order by hId DESC limit 1";
                     var exec1= conn.query(exeQuery2,
                                           id,
                                           (err, historyRows) => {
@@ -43,7 +61,8 @@ const loginCheck = (id, password, callback) => {
                             aBalance = historyRows[0].aBalance;
                             
                         }
-                        
+                    
+                        console.log(userRows[0].update_at);
                         
                         var data = {
                             
@@ -56,23 +75,7 @@ const loginCheck = (id, password, callback) => {
                             
                         };
                         
-                        var exec2 = conn.query("update user set update_at = CURRENT_TIMESTAMP where id = ?",
-                                               id,
-                                               (err, result) => {
-                            
-                            conn.release();
-                            console.log('실행 SQL2 = ', exec2.sql);
-
-                            if(result.affectedRows > 0){
-
-                                callback(null, data);   //접속 시간 업데이트 성공
-
-                            }else{
-
-                                callback(null, null);   //접속 시간 업데이트 실패
-
-                            }
-                        });
+                        userTimeUpdate(data, id, conn, callback);
                         
                     });
                 
@@ -87,26 +90,9 @@ const loginCheck = (id, password, callback) => {
                         update_at:userRows[0].update_at,
                         aBalance:null
 
-                    };
-                    
+                    };    
 
-                    var exec1 = conn.query("update user set update_at = CURRENT_TIMESTAMP where id = ?",
-                                           id,
-                                           (err, result) => {
-
-                        conn.release();
-                        console.log('실행 SQL2 = ', exec1.sql);
-
-                        if(result.affectedRows > 0){
-
-                            callback(null, data);   //접속 시간 업데이트 성공
-
-                        }else{
-
-                            callback(null, null);   //접속 시간 업데이트 실패
-
-                        }
-                    });
+                    userTimeUpdate(data, id, conn, callback);
                     
                 }
                     

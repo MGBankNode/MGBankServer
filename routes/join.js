@@ -1,8 +1,18 @@
 var pool;
+let moment = require('moment');
 
 const init = (mysqlPool) => {
     console.log('[join init]');
     pool = mysqlPool;
+}
+
+var CreateBarcode = (phone, callback) => {
+
+    var date = moment().format("YYYYMMDD");
+    
+    var barcode = date + (phone.toString()).substr(3, 8);
+    
+    callback(barcode);
 }
 
 
@@ -19,9 +29,16 @@ const joinUser = (id, password, name, phone, callback) => {
             return;
         }
         
-        var reqData = {id:id, pw:password, name:name, phone:phone };
+        var barcode = "";
+        CreateBarcode(phone, (result) =>{
+            
+             barcode = result;
+            
+        });
         
-        var exec = conn.query('insert into user set ? ', 
+        var reqData = [{id:id, pw:password, name:name, phone:phone, mID:barcode }, {mID:barcode}];
+        
+        var exec = conn.query('insert into user set ?;insert into membership set ?', 
                               reqData, 
                               (err, result) => {
             conn.release();
