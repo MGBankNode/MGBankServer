@@ -5,7 +5,7 @@ const init = (mysqlPool) => {
     pool = mysqlPool;
 }
 
-const accountByHistory = (aNum,  sDate, lDate, callback) => {
+const accountByHistory = (aNum, sDate, lDate, callback) => {
     pool.getConnection((err, conn) => {
         if(err){  
             if(conn){
@@ -19,10 +19,10 @@ const accountByHistory = (aNum,  sDate, lDate, callback) => {
             
         }
         
-        var exeQuery = "select hId, hDate, hType, hValue, hName, aBalance, (select cType from accountDB.card where cId = (select cId from accountDB.account_card where cNum = nodeDB.aHistory.cNum)) as cType, cName from nodeDB.aHistory, nodeDB.category where nodeDB.aHistory.cId=nodeDB.category.cId AND hDate>=? AND hDate<? AND aNum = ? order by hDate";
+        var exeQuery = "select hId, hDate, hType, hValue, hName, aBalance, (select aType from accountDB.account WHERE aId = (select distinct aId from accountDB.account_card where aNum = ?)) as aType,(select cType from accountDB.card where cId = (select cId from accountDB.account_card where cNum = nodeDB.aHistory.cNum)) as cType, cName from nodeDB.aHistory, nodeDB.category where nodeDB.aHistory.cId=nodeDB.category.cId AND hDate>=? AND hDate<? AND aNum = ? order by hDate";
         
         var exec = conn.query(exeQuery, 
-                              [aNum, sDate, lDate],
+                              [aNum, aNum, sDate, lDate],
                               (err, rows) => {
             
             conn.release();
@@ -103,6 +103,7 @@ const accountbyhistory = (req, res) => {
                         hValue:(rows[i].hValue).toString(),
                         hName:rows[i].hName,
                         aBalance:(rows[i].aBalance).toString(),
+                        aType:rows[i].aType,
                         cType:rows[i].cType,
                         cName:rows[i].cName
                     }
@@ -489,7 +490,7 @@ const accountHistory = (id, sDate, lDate, callback) => {
         
         
         var data = [id, sDate, lDate];
-        var exeQuery = "select hId, hDate, hType, hValue, hName, aBalance, (select cType from accountDB.card where cId = (select cId from accountDB.account_card where cNum = nodeDB.aHistory.cNum)) as cType, cName from nodeDB.aHistory, nodeDB.category where id = (select accountID from nodeDB.user where id = ?) AND hDate>=? AND hDate<? AND nodeDB.aHistory.cId=nodeDB.category.cId order by hDate";
+        var exeQuery = "select hId, hDate, hType, hValue, hName, aBalance, (select aType from accountDB.account where aId = (select distinct aId from accountDB.account_card where aNum = nodeDB.aHistory.aNum)) as aType, (select cType from accountDB.card where cId = (select cId from accountDB.account_card where cNum = nodeDB.aHistory.cNum)) as cType, cName from nodeDB.aHistory, nodeDB.category where id = (select accountID from nodeDB.user where id = ?) AND hDate>=? AND hDate<? AND nodeDB.aHistory.cId=nodeDB.category.cId order by hDate";
         
         var exec = conn.query(exeQuery, 
                               data,
@@ -619,6 +620,7 @@ const accounthistory = (req, res) => {
                         hValue:(rows[i].hValue).toString(),
                         hName:rows[i].hName,
                         aBalance:(rows[i].aBalance).toString(),
+                        aType:rows[i].aType,
                         cType:rows[i].cType,
                         cName:rows[i].cName
                     }
