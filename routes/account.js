@@ -241,27 +241,27 @@ const addaccount = (req, res) => {
             
             if(data == "success"){
                 
-                res.send({code:'200', message:'success', error: null});
+                res.send({code:'200', message:'success', error: 'null'});
                 
             }else if(data == "history_insert_fail"){
                 
-                res.send({code:'200', message:'history_insert_fail', error: null});
+                res.send({code:'200', message:'history_insert_fail', error: 'null'});
                 
             }else if(data == "caweigth_update_fail"){
                 
-                res.send({code:'200', message:'caweigth_update_fail', error: null});
+                res.send({code:'200', message:'caweigth_update_fail', error: 'null'});
                 
             }else if(data == "category_insert_fail"){
                 
-                res.send({code:'200', message:'category_insert_fail', error: null});
+                res.send({code:'200', message:'category_insert_fail', error: 'null'});
                 
             }else if(data == "account_update_fail"){
                 
-                res.send({code:'200', message:'account_update_fail', error: null});
+                res.send({code:'200', message:'account_update_fail', error: 'null'});
                 
             }else if(data == "id_check_fail"){
                 
-                res.send({code:'200', message:'id_check_fail', error: null});
+                res.send({code:'200', message:'id_check_fail', error: 'null'});
                 
             }
             
@@ -269,7 +269,7 @@ const addaccount = (req, res) => {
         
     }else{
 
-        res.send({code:'503', message:'db_fail', error: null});
+        res.send({code:'503', message:'db_fail', error: 'null'});
 
     }
 };
