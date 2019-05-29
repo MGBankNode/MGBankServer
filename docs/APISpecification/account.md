@@ -97,7 +97,8 @@
 
     ```json
     {
-        "id" : "testID"
+        "id" : "testID",
+        "date" : "lastUpdateDate"
     }
     ```
 

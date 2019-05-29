@@ -21,14 +21,14 @@ const analysisWeek = (id, dates, callback) => {
             
         }
         
-       // id = 'b';
+       
         var datesArray = (dates.toString()).split(',');
         var weekCount = (datesArray.length - 1);
         var query = '';
         
         for(var i = 0; i < weekCount; ++i){
             
-             query += "select SUM(hValue) as weekSum from aHistory where id = (select accountID from user where id = '"+ id + "') AND hDate>= '" + datesArray[i] + "' AND hDate< '" + datesArray[i + 1] + "' AND (hType = 1 OR hType = 2);";
+             query += "select SUM(hValue) as weekSum from aHistory where id = (select accountID from user where id = '"+ id + "') AND hDate>= '" + datesArray[i] + "' AND hDate< '" + datesArray[i + 1] + "' AND (hType = 1 OR hType = 2 OR hType = 3);";
             
         }
         
@@ -92,10 +92,10 @@ const analysisDaily = (id, sDate, lDate, callback) => {
             callback(err, null);
             return;
         }
-       // id = 'b';
+
         let queryData = [ id, sDate, lDate ];
         
-        var query = "select hDate, hValue from aHistory where id = (select accountID from user where id = ?) AND hDate>=? AND hDate<? AND (hType = 1 OR hType = 2)"
+        var query = "select hDate, hValue from aHistory where id = (select accountID from user where id = ?) AND hDate>=? AND hDate<? AND (hType = 1 OR hType = 2 OR hType = 3)"
         
         var exec = conn.query(query, queryData, (err, result) => {
             conn.release();
@@ -176,18 +176,18 @@ const analysisdaily = (req, res) => {
             if(err){
                 
                 console.error('일별 소비 분석 중 오류 : ' + err.stack);
-                res.send({code:'500', message:'error', error: err, dailyPattern:null});
+                res.send({code:'500', message:'error', error: err, dailyPattern:'null'});
                 
                 return;
                 
             }
             console.dir(results);   
-            res.send({code:'200', message:'success', error: null, dailyPattern:results});
+            res.send({code:'200', message:'success', error: 'null', dailyPattern:results});
             
         });
     }else{
         
-        res.send({code:'503', message:'db_fail', error: null, dailyPattern:null});
+        res.send({code:'503', message:'db_fail', error: 'null', dailyPattern:'null'});
         
     }
 }
@@ -201,19 +201,19 @@ const analysisweek = (req, res) => {
             if(err){
                 
                 console.error('주차 소비 분석 중 오류 : ' + err.stack);
-                res.send({code:'500', message:'error', error: err, weekPattern:null});
+                res.send({code:'500', message:'error', error: err, weekPattern:'null'});
                 
                 return;
                 
             }
                 
-            res.send({code:'200', message:'success', error: null, weekPattern:results});
+            res.send({code:'200', message:'success', error: 'null', weekPattern:results});
             
         });
         
     }else{
 
-        res.send({code:'503', message:'db_fail', error: null, weekPattern:null});
+        res.send({code:'503', message:'db_fail', error: 'null', weekPattern:'null'});
 
     }
 };

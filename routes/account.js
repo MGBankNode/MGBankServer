@@ -274,8 +274,8 @@ const addaccount = (req, res) => {
     }
 };
 
-const accountRefresh = (id, conn, callback) => {    
-    var query1 = "INSERT INTO nodeDB.defaultCategory(store, cId) SELECT DISTINCT hName, 11 FROM accountDB.aHistory WHERE accountDB.aHistory.id = " + id + " AND accountDB.aHistory.hId > (select hId from accountDB.aHistory where id = " + id + " AND hDate = (select hDate from nodeDB.aHistory where hType<>3 AND id = " + id + " order by hDate DESC Limit 1) AND hName = (select hName from nodeDB.aHistory where hType<>3 AND id = " + id + " order by hDate DESC Limit 1)) AND accountDB.aHistory.hType=2 AND accountDB.aHistory.hName NOT IN (SELECT store FROM nodeDB.defaultCategory);";
+const accountRefresh = (id, date, conn, callback) => {    
+    var query1 = "INSERT INTO nodeDB.defaultCategory(store, cId) SELECT DISTINCT hName, 11 FROM accountDB.aHistory WHERE accountDB.aHistory.id = " + id + " AND accountDB.aHistory.hDate > '" + date + "' AND accountDB.aHistory.hType = 2 AND aHistory.hName NOT IN (select store from nodeDB.defaultCategory);";
 
     var query2 = "UPDATE nodeDB.caweight, (SELECT DISTINCT store, cId FROM nodeDB.defaultCategory WHERE nodeDB.defaultCategory.store IN (SELECT hName FROM accountDB.aHistory WHERE accountDB.aHistory.id = " + id + " AND accountDB.aHistory.hType=2) AND nodeDB.defaultCategory.store NOT IN (SELECT hName FROM nodeDB.aHistory WHERE nodeDB.aHistory.id= '" + id + "')) AS a SET weight = weight+1 WHERE a.store = nodeDB.caweight.store AND a.cId = nodeDB.caweight.cId;"
 
@@ -329,11 +329,15 @@ const accountRefresh = (id, conn, callback) => {
 
 
 
-            var query5 = "INSERT INTO nodeDB.aHistory(hDate, hType, hValue, hName, id, aBalance, cNum, aNum, cId) (SELECT hDate, hType, hValue, hName, id, aBalance, cNum, aNum, cId FROM accountDB.aHistory, nodeDB.defaultCategory WHERE id= " + id + " AND accountDB.aHistory.hId > (select hId from accountDB.aHistory where id = " + id + " AND hDate = (select hDate from nodeDB.aHistory where hType<>3 AND id = " + id + " order by hDate DESC Limit 1) AND hName = (select hName from nodeDB.aHistory where hType<>3 AND id = " + id + " order by hDate DESC Limit 1)) AND CASE accountDB.aHistory.hType WHEN 0 THEN nodeDB.defaultCategory.store='계좌입금' WHEN 1 THEN nodeDB.defaultCategory.store='계좌출금' WHEN 2 THEN accountDB.aHistory.hName=nodeDB.defaultCategory.store END);"
+            var query5 = "INSERT INTO nodeDB.aHistory(hDate, hType, hValue, hName, id, aBalance, cNum, aNum, cId) (SELECT hDate, hType, hValue, hName, id, aBalance, cNum, aNum, cId FROM accountDB.aHistory, nodeDB.defaultCategory WHERE id= " + id + " AND accountDB.aHistory.hId > (select hId from accountDB.aHistory where id = " + id + " AND hDate = (select hDate from nodeDB.aHistory where hType<>3 AND id = " + id + " order by hDate DESC Limit 1) AND hName = (select hName from nodeDB.aHistory where hType<>3 AND id = " + id + " order by hDate DESC Limit 1)) AND CASE accountDB.aHistory.hType WHEN 0 THEN nodeDB.defaultCategory.store='계좌입금' WHEN 1 THEN nodeDB.defaultCategory.store='계좌출금' WHEN 2 THEN accountDB.aHistory.hName=nodeDB.defaultCategory.store END);";
 
-            var query6 = "UPDATE nodeDB.aHistory, (SELECT DISTINCT nodeDB.aHistory.hName as hName, nodeDB.aHistory.cId as cId FROM nodeDB.aHistory, nodeDB.defaultCategory WHERE id=" + id + " AND hType=2 AND nodeDB.aHistory.hName = nodeDB.defaultCategory.store AND nodeDB.aHistory.cId <> nodeDB.defaultCategory.cId) as A SET nodeDB.aHistory.cId = A.cId WHERE nodeDB.aHistory.hName = A.hName;"
+            var query6 = "UPDATE nodeDB.aHistory, (SELECT DISTINCT nodeDB.aHistory.hName as hName, nodeDB.aHistory.cId as cId FROM nodeDB.aHistory, nodeDB.defaultCategory WHERE id=" + id + " AND hType=2 AND nodeDB.aHistory.hName = nodeDB.defaultCategory.store AND nodeDB.aHistory.cId <> nodeDB.defaultCategory.cId) as A SET nodeDB.aHistory.cId = A.cId WHERE nodeDB.aHistory.hName = A.hName;";
+            
+            var query7 = "update user set update_at = CURRENT_TIMESTAMP where accountID = " + id + ";";
+            
+            var query8 = "select update_at from user where accountID = " + id + ";";
 
-            var exec2 = conn.query(query5 + query6,
+            var exec2 = conn.query(query5 + query6 + query7 + query8,
                           (err, result) => {
 
                 conn.release();
@@ -346,11 +350,11 @@ const accountRefresh = (id, conn, callback) => {
 
                 }
 
-                if(result[0] && result[1]){
+                if(result[0] && result[1] && result[2]){
 
                     //console.dir(result[0]);
                     //console.dir(result[1]);
-                    callback(null, "success");
+                    callback((result[3].update_at).toString(), "success");
 
                 }else{
 
@@ -367,7 +371,7 @@ const accountRefresh = (id, conn, callback) => {
     });
 };
 
-const getAccountID = (id, callback) => {
+const getAccountID = (id, date, callback) => {
     pool.getConnection((err, conn) => {
         if(err){  
             
@@ -398,7 +402,7 @@ const getAccountID = (id, callback) => {
 
             if(result){
                 
-                accountRefresh(result[0].accountID, conn, callback);
+                accountRefresh(result[0].accountID, date, conn, callback);
                 
             }
             else{
@@ -414,10 +418,10 @@ const getAccountID = (id, callback) => {
 const accountrefresh = (req, res) => {
     console.log('[accountrefresh] 호출');
     
-    const { id } = req.body;
+    const { id, date }= req.body;
     
     if(pool){
-        getAccountID(id, (err, data) => {
+        getAccountID(id, date, (err, data) => {
             if(err){
                 
                 console.error('새로고침 중 오류 : ' + err.stack);
@@ -429,7 +433,7 @@ const accountrefresh = (req, res) => {
             
             if(data == "success"){
                 
-                res.send({code:'200', message:'success', error: 'null'});
+                res.send({code:'200', message:'success', error: err});
                 
             }
             else{
