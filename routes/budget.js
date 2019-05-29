@@ -74,7 +74,7 @@ const changebudget = (req, res) => {
                 res.send({
                         code:'200', 
                         message:'success', 
-                        error:null
+                        error:'null'
                 });
                 
             }else{
@@ -82,7 +82,7 @@ const changebudget = (req, res) => {
                 res.send({
                         code:'200', 
                         message:'fail', 
-                        error:null
+                        error:'null'
                 });
                 
             }
@@ -94,8 +94,7 @@ const changebudget = (req, res) => {
         res.send({
                 code:'503',
                 message:'db_fail', 
-                error:null
-
+                error:'null'
         });
     }
 };
@@ -161,7 +160,7 @@ const defaultbudget = (req, res) => {
                         code:'500', 
                         message:'error', 
                         error: err,
-                        data:null
+                        data:'null'
                 });
                 return;
             }
@@ -171,7 +170,7 @@ const defaultbudget = (req, res) => {
                 res.send({
                         code:'200', 
                         message:'success', 
-                        error:null,
+                        error:'null',
                         data:data
                 });
                 
@@ -180,8 +179,8 @@ const defaultbudget = (req, res) => {
                 res.send({
                         code:'200', 
                         message:'fail', 
-                        error:null,
-                        data:null
+                        error:'null',
+                        data:'null'
                 });
                 
             }
@@ -193,8 +192,8 @@ const defaultbudget = (req, res) => {
         res.send({
                 code:'503',
                 message:'db_fail', 
-                error:null, 
-                data:null
+                error:'null', 
+                data:'null'
 
         });
     }

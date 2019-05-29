@@ -131,7 +131,7 @@ const barcodepoint = (req, res) => {
                         code:'500', 
                         message:'error', 
                         error: err,
-                        data:null
+                        data:'null'
                 });
                 return;
             }
@@ -141,7 +141,7 @@ const barcodepoint = (req, res) => {
                 res.send({
                         code:'200', 
                         message:'success', 
-                        error:null,
+                        error:'null',
                         data:{
                             barcode:(data[0].mID).toString(),
                             point:(data[0].mPoint).toString()
@@ -153,8 +153,8 @@ const barcodepoint = (req, res) => {
                 res.send({
                         code:'200', 
                         message:'fail', 
-                        error:null,
-                        data:null
+                        error:'null',
+                        data:'null'
                 });
                 
             }
@@ -166,8 +166,8 @@ const barcodepoint = (req, res) => {
         res.send({
                 code:'503',
                 message:'db_fail', 
-                error:null, 
-                data:null
+                error:'null', 
+                data:'null'
 
         });
     }
@@ -189,7 +189,7 @@ const barcodeinfo = (req, res) =>{
                         code:'500', 
                         message:'error', 
                         error: err,
-                        data:null
+                        data:'null'
                 });
                 return;
             }
@@ -199,7 +199,7 @@ const barcodeinfo = (req, res) =>{
                 res.send({
                         code:'200', 
                         message:'success', 
-                        error:null,
+                        error:'null',
                         data:{
                             name:data[0].name,
                             point:(data[0].mPoint).toString()
@@ -211,8 +211,8 @@ const barcodeinfo = (req, res) =>{
                 res.send({
                         code:'200', 
                         message:'fail', 
-                        error:null,
-                        data:null
+                        error:'null',
+                        data:'null'
                 });
                 
             }
@@ -224,8 +224,8 @@ const barcodeinfo = (req, res) =>{
         res.send({
                 code:'503',
                 message:'db_fail', 
-                error:null, 
-                data:null
+                error:'null', 
+                data:'null'
         });
         
     }
@@ -256,7 +256,7 @@ const addpoint = (req, res) => {
                 res.send({
                         code:'200', 
                         message:'success', 
-                        error:null
+                        error:'null'
                 });
                 
             }else{
@@ -264,7 +264,7 @@ const addpoint = (req, res) => {
                 res.send({
                         code:'200', 
                         message:'fail', 
-                        error:null
+                        error:'null'
                 });
                 
             }
@@ -276,7 +276,7 @@ const addpoint = (req, res) => {
         res.send({
                 code:'503',
                 message:'db_fail', 
-                error:null
+                error:'null'
         });
         
     }

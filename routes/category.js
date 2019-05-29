@@ -43,10 +43,6 @@ const updateCategory = (id, hId, prev, cur, callback) => {
             
             if(results){
         
-                //console.dir(results[0]);
-                //console.dir(results[1]);
-                //console.dir(results[2]);
-                //console.dir(results[3]);
                 callback(null, results);
                     
             }else{
@@ -86,7 +82,7 @@ const updatecategory = (req, res) => {
                 res.send({
                         code:'200', 
                         message:'success', 
-                        error:null
+                        error:'null'
                 });
                 
             }else{
@@ -94,7 +90,7 @@ const updatecategory = (req, res) => {
                 res.send({
                         code:'200', 
                         message:'fail', 
-                        error:null
+                        error:'null'
                 });
                 
             }
@@ -106,7 +102,7 @@ const updatecategory = (req, res) => {
         res.send({
                 code:'503',
                 message:'db_fail', 
-                error:null
+                error:'null'
 
         });
     }
