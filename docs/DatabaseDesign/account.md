@@ -74,7 +74,7 @@
 - 설명
 
   ```mysql
-  NSERT INTO nodeDB.defaultCategory(store, cId) SELECT DISTINCT hName, 11 FROM accountDB.aHistory WHERE accountDB.aHistory.id = 'accountID' AND accountDB.aHistory.hId > (select hId from accountDB.aHistory where id = 'accountID' AND hDate = (select hDate from nodeDB.aHistory where hType<>3 AND id = 'accountID' order by hDate DESC Limit 1) AND hName = (select hName from nodeDB.aHistory where hType<>3 AND id = 'accountID' order by hDate DESC Limit 1)) AND accountDB.aHistory.hType=2 AND accountDB.aHistory.hName NOT IN (SELECT store FROM nodeDB.defaultCategory);
+  INSERT INTO nodeDB.defaultCategory(store, cId) SELECT DISTINCT hName, 11 FROM accountDB.aHistory WHERE accountDB.aHistory.id = 'id' AND accountDB.aHistory.hDate > 'date' AND accountDB.aHistory.hType = 2 AND aHistory.hName NOT IN (select store from nodeDB.defaultCategory);
   ```
 
 - 설명
@@ -106,3 +106,17 @@
   ```mysql
   UPDATE nodeDB.aHistory, (SELECT DISTINCT nodeDB.aHistory.hName as hName, nodeDB.aHistory.cId as cId FROM nodeDB.aHistory, nodeDB.defaultCategory WHERE id='accountID' AND hType=2 AND nodeDB.aHistory.hName = nodeDB.defaultCategory.store AND nodeDB.aHistory.cId <> nodeDB.defaultCategory.cId) as A SET nodeDB.aHistory.cId = A.cId WHERE nodeDB.aHistory.hName = A.hName;
   ```
+
+- 설명
+
+  ```mysql
+  update user set update_at = CURRENT_TIMESTAMP where accountID = 'id';
+  ```
+
+- 설명
+
+  ```mysql
+  select update_at from user where accountID = 'id';
+  ```
+
+  

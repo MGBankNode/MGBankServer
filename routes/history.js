@@ -22,7 +22,7 @@ const accountByHistory = (aNum, sDate, lDate, callback) => {
         var exeQuery = "select hId, hDate, hType, hValue, hName, aBalance, (select aType from accountDB.account WHERE aId = (select distinct aId from accountDB.account_card where aNum = ?)) as aType,(select cType from accountDB.card where cId = (select cId from accountDB.account_card where cNum = nodeDB.aHistory.cNum)) as cType, cName from nodeDB.aHistory, nodeDB.category where nodeDB.aHistory.cId=nodeDB.category.cId AND hDate>=? AND hDate<? AND aNum = ? order by hDate";
         
         var exec = conn.query(exeQuery, 
-                              [aNum, aNum, sDate, lDate],
+                              [aNum, sDate, lDate, aNum],
                               (err, rows) => {
             
             conn.release();
@@ -62,7 +62,8 @@ const accountbyhistory = (req, res) => {
                     code: '500',
                     message: 'error',
                     error: err,
-                    history: null
+                    history: 'null',
+                    daily_history:'null'
                 });
                 return;
                 
@@ -70,34 +71,80 @@ const accountbyhistory = (req, res) => {
             
             if(rows){
 
-                var data = [];
+                let data = [];
+                let daily_data = [];
+                
+                var prevDay = '';
+                var benefit = 0;
+                var loss = 0;
+                
+                var j = 0;
+                
                 for(var i = 0; i < rows.length; i++){
                     
                     var hDate = (rows[i].hDate).toString();
+                    var curDay = hDate.substr(8, 2);
                     var hType = rows[i].hType;
-                
+                    
+                    if(prevDay == ''){
+                        
+                        prevDay = curDay;
+                        
+                    }
+                    
+                    //현재 날짜 보다 큰 경우, 처음부터 시작
+                    if((curDay * 1) > (prevDay * 1)){
+                        
+                        daily_data[j] = {
+                            day:prevDay,
+                            benefit:benefit.toString(),
+                            loss:loss.toString()
+                        };
+                        
+                        ++j;
+                        
+                        benefit = 0;
+                        loss = 0;
+                        
+                    }
                         
                     if(hType == 0){
 
                         hType = '입금';
+                        benefit += rows[i].hValue;
 
                     }else if(hType == 1){
 
                         hType = '출금';
+                        loss += rows[i].hValue;
 
                     }else if(hType == 2){
 
                         hType = '카드';
+                        loss += rows[i].hValue;
 
                     }else if(hType == 3){
-                        
+
                         hType = '영수증';
-                        
+                        loss += rows[i].hValue;
+
                     }
                     
                     
+                    prevDay = curDay;
+                    
+                    if((i + 1) == rows.length){
+                        
+                        daily_data[j] = {
+                            day:prevDay,
+                            benefit:benefit.toString(),
+                            loss:loss.toString()
+                        };
+                        
+                    }
+                    
                     data[i] = {
-                        hId:(rows[i].hId).toString(),
+                        hId :(rows[i].hId).toString(),
                         hDate:rows[i].hDate,
                         hType:hType,
                         hValue:(rows[i].hValue).toString(),
@@ -112,8 +159,9 @@ const accountbyhistory = (req, res) => {
                 res.send({
                     code: '500',
                     message: 'success',
-                    error: err,
-                    history: data
+                    error: 'null',
+                    history: data,
+                    daily_history:daily_data
                 });
                 
             }else{
@@ -121,8 +169,9 @@ const accountbyhistory = (req, res) => {
                 res.send({
                     code: '500',
                     message: 'fail',
-                    error: err,
-                    history: null
+                    error: 'null',
+                    history: 'null',
+                    daily_history: 'null'
                 });
                 
             }
@@ -134,8 +183,9 @@ const accountbyhistory = (req, res) => {
         res.send({
             code: '503',
             message: 'db_fail',
-            error: null,
-            history: null
+            error: 'null',
+            history: 'null',
+            daily_history:'null'
         });     
         
     }
