@@ -43,7 +43,7 @@
     {
         "code" : "200",
         "message" : "fail",
-        "error" : null
+        "error" : "null"
     }
     ```
 
@@ -53,7 +53,7 @@
     {
         "code" : "200",
         "message" : "success",
-        "error" : null
+        "error" : "null"
     }
     ```
 
@@ -63,7 +63,7 @@
     {
         "code" : "503",
         "message" : "db_fail",
-        "error" : null
+        "error" : "null"
     }
     ```
 
@@ -116,7 +116,7 @@
     {
         "code" : "200",
         "message" : "success",
-        "error" : null
+        "error" : "null"
     }
     ```
 
@@ -126,7 +126,7 @@
     {
         "code" : "200",
         "message" : "fail",
-        "error" : null
+        "error" : "null"
     }
     ```
 
@@ -136,7 +136,7 @@
     {
         "code" : "503",
         "message" : "db_fail",
-        "error" : null
+        "error" : "null"
     }
     ```
 
