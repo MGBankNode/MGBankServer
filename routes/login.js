@@ -88,7 +88,7 @@ const loginCheck = (id, password, callback) => {
                         phone:userRows[0].phone,
                         accountCheck:(userRows[0].accountCheck).toString(), 
                         update_at:userRows[0].update_at,
-                        aBalance:null
+                        aBalance:'null'
 
                     };    
 
@@ -124,7 +124,7 @@ const logincheck = (req, res) => {
                         code:'500', 
                         message:'error', 
                         error: err,
-                        data:null
+                        data:'null'
                 });
                 return;
             }
@@ -134,7 +134,7 @@ const logincheck = (req, res) => {
                 res.send({
                         code:'200', 
                         message:'success', 
-                        error:null,
+                        error:'null',
                         data:data
                 });
                 
@@ -143,8 +143,8 @@ const logincheck = (req, res) => {
                 res.send({
                         code:'200', 
                         message:'fail', 
-                        error:null,
-                        data:null
+                        error:'null',
+                        data:'null'
                 });
                 
             }
@@ -156,8 +156,8 @@ const logincheck = (req, res) => {
         res.send({
                 code:'503',
                 message:'db_fail', 
-                error:null, 
-                data:null
+                error:'null', 
+                data:'null'
 
         });
     }
