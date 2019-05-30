@@ -138,11 +138,11 @@ const adddevice = function(req, res){
             
             if(addedDevice){
 
-                res.send({code:'200', message:'success', error: null});
+                res.send({code:'200', message:'success', error: 'null'});
                 
             }else{
 
-                res.send({code:'200', message:'fail', error: null});
+                res.send({code:'200', message:'fail', error: 'null'});
 
             }
             
@@ -150,7 +150,7 @@ const adddevice = function(req, res){
         
     }else{
 
-        res.send({code:'503', message:'db_fail', error: null});
+        res.send({code:'503', message:'db_fail', error: 'null'});
 
     }
 };
@@ -173,12 +173,12 @@ const devicecheck = (req, res) => {
             
             if(rows){
                 
-                res.send({code:'200', message:'YES', error: null});
+                res.send({code:'200', message:'YES', error: 'null'});
 
                 
             }else{
                 
-                res.send({code:'200', message:'NO', error: null});
+                res.send({code:'200', message:'NO', error: 'null'});
 
             }
             
@@ -186,7 +186,7 @@ const devicecheck = (req, res) => {
         
     }else{
         
-        res.send({code:'503', message:'db_fail', error: null});
+        res.send({code:'503', message:'db_fail', error: 'null'});
         
     }
 };
@@ -210,11 +210,11 @@ const deletedevice = (req, res) => {
             
             if(deletedDevice){
 
-                res.send({code:'200', message:'success', error: null});
+                res.send({code:'200', message:'success', error: 'null'});
 
             }else{
 
-                res.send({code:'200', message:'fail', error: null});
+                res.send({code:'200', message:'fail', error: 'null'});
 
             }
             
@@ -222,7 +222,7 @@ const deletedevice = (req, res) => {
         
     }else{
 
-        res.send({code:'503', message:'db_fail', error: null});
+        res.send({code:'503', message:'db_fail', error: 'null'});
         
     }
 };
