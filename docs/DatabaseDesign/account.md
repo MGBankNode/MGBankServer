@@ -98,7 +98,7 @@
 - 설명
 
   ```mysql
-  INSERT INTO nodeDB.aHistory(hDate, hType, hValue, hName, id, aBalance, cNum, aNum, cId) (SELECT hDate, hType, hValue, hName, id, aBalance, cNum, aNum, cId FROM accountDB.aHistory, nodeDB.defaultCategory WHERE id= 'accountID' AND accountDB.aHistory.hId > (select hId from accountDB.aHistory where id = 'accountID' AND hDate = (select hDate from nodeDB.aHistory where hType<>3 AND id = 'accountID' order by hDate DESC Limit 1) AND hName = (select hName from nodeDB.aHistory where hType<>3 AND id = 'accountID' order by hDate DESC Limit 1)) AND CASE accountDB.aHistory.hType WHEN 0 THEN nodeDB.defaultCategory.store='계좌입금' WHEN 1 THEN nodeDB.defaultCategory.store='계좌출금' WHEN 2 THEN accountDB.aHistory.hName=nodeDB.defaultCategory.store END);
+  INSERT INTO nodeDB.aHistory(hDate, hType, hValue, hName, id, aBalance, cNum, aNum, cId) (SELECT hDate, hType, hValue, hName, id, aBalance, cNum, aNum, cId FROM accountDB.aHistory, nodeDB.defaultCategory WHERE id= 'id'  AND accountDB.aHistory.hDate > 'date' AND CASE accountDB.aHistory.hType WHEN 0 THEN nodeDB.defaultCategory.store='계좌입금' WHEN 1 THEN nodeDB.defaultCategory.store='계좌출금' WHEN 2 THEN accountDB.aHistory.hName=nodeDB.defaultCategory.store END);
   ```
 
 - 설명
