@@ -43,13 +43,13 @@
     {
         "code" : "200",
         "message" : "success",
-        "error" : null,
+        "error" : "null",
         "data" : {
             "id" : "testID",
             "name" : "testUserName",
-            "accountCheck" : NUM(0/1),
-            "update_at" : TIME,
-            "aBalance" : "accountBalance"/null
+            "accountCheck" : "0/1",
+            "update_at" : "TIME",
+            "aBalance" : "accountBalance/null"
         }
     }
     ```
@@ -60,8 +60,8 @@
     {
         "code" : "200",
         "message" : "fail",
-        "error" : null,
-        "data" : null
+        "error" : "null",
+        "data" : "null"
     }
     ```
 
@@ -83,7 +83,7 @@
         "code" : "500",
         "message" : "error",
     	"error" : "errorMessage",
-        "data" : null
+        "data" : "null"
     }
     ```
 

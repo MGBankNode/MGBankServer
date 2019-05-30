@@ -157,7 +157,7 @@ const accountbyhistory = (req, res) => {
                 }
                 
                 res.send({
-                    code: '500',
+                    code: '200',
                     message: 'success',
                     error: 'null',
                     history: data,
@@ -167,7 +167,7 @@ const accountbyhistory = (req, res) => {
             }else{
                 
                 res.send({
-                    code: '500',
+                    code: '200',
                     message: 'fail',
                     error: 'null',
                     history: 'null',
@@ -253,7 +253,7 @@ const balancelist = (req, res) => {
                     code: '500',
                     message: 'error',
                     error: err,
-                    data: null
+                    data: 'null'
                 });
                 return;
                 
@@ -271,19 +271,19 @@ const balancelist = (req, res) => {
                 
                 //console.dir(data);
                 res.send({
-                    code: '500',
+                    code: '200',
                     message: 'success',
-                    error: err,
+                    error: 'null',
                     data: data
                 });
                 
             }else{
                 
                 res.send({
-                    code: '500',
+                    code: '200',
                     message: 'fail',
-                    error: err,
-                    data: null
+                    error: 'null',
+                    data: 'null'
                 });
                 
             }
@@ -294,7 +294,7 @@ const balancelist = (req, res) => {
         res.send({
             code: '503',
             message: 'db_fail',
-            error: null,
+            error: 'null',
             data: null
         });     
         
@@ -363,7 +363,7 @@ const accountbalance = (req, res) => {
                     code: '500',
                     message: 'error',
                     error: err,
-                    aBalance: null
+                    aBalance: 'null'
                 });
                 return;
                 
@@ -372,19 +372,19 @@ const accountbalance = (req, res) => {
             if(rows){
                 
                 res.send({
-                    code: '500',
+                    code: '200',
                     message: 'success',
-                    error: err,
+                    error: 'null',
                     aBalance: (rows[0].aBalance).toString()
                 });
                 
             }else{
                 
                 res.send({
-                    code: '500',
+                    code: '200',
                     message: 'fail',
-                    error: err,
-                    aBalance: null
+                    error: 'null',
+                    aBalance: 'null'
                 });
                 
             }
@@ -395,8 +395,8 @@ const accountbalance = (req, res) => {
         res.send({
             code: '503',
             message: 'db_fail',
-            error: null,
-            aBalance: null
+            error: 'null',
+            aBalance: 'null'
         });     
         
     }
@@ -418,7 +418,7 @@ const accountHomeHistory = (id, sDate, lDate, callback) => {
         }
         
         var data = [id, sDate, lDate];
-        var exeQuery = "select hId, hDate, hValue, hName, cName from nodeDB.aHistory, nodeDB.category where id = (select accountID from nodeDB.user where id = ?) AND hDate>=? AND hDate<? AND (nodeDB.aHistory.hType = 1 OR nodeDB.aHistory.hType = 2) AND nodeDB.aHistory.cId=nodeDB.category.cId order by hDate";
+        var exeQuery = "select hId, hDate, hValue, hName, cName from nodeDB.aHistory, nodeDB.category where id = (select accountID from nodeDB.user where id = ?) AND hDate>=? AND hDate<? AND (nodeDB.aHistory.hType <> 0) AND nodeDB.aHistory.cId=nodeDB.category.cId order by hDate";
         
         var exec = conn.query(exeQuery, 
                               data,
@@ -461,7 +461,7 @@ const accounthomehistory = (req, res) => {
                     code: '500',
                     message: 'error',
                     error: err,
-                    history: null
+                    history: 'null'
                 });
                 return;
                 
@@ -492,19 +492,19 @@ const accounthomehistory = (req, res) => {
                 }
                 
                 res.send({
-                    code: '500',
+                    code: '200',
                     message: 'success',
-                    error: err,
+                    error: 'null',
                     history: data
                 });
                 
             }else{
                 
                 res.send({
-                    code: '500',
+                    code: '200',
                     message: 'fail',
-                    error: err,
-                    history: null
+                    error: 'null',
+                    history: 'null'
                 });
                 
             }
@@ -516,8 +516,8 @@ const accounthomehistory = (req, res) => {
         res.send({
             code: '503',
             message: 'db_fail',
-            error: null,
-            history: null
+            error: 'null',
+            history: 'null'
         });     
         
     }
@@ -582,8 +582,8 @@ const accounthistory = (req, res) => {
                     code: '500',
                     message: 'error',
                     error: err,
-                    history: null,
-                    daily_history:null
+                    history: 'null',
+                    daily_history:'null'
                 });
                 return;
                 
@@ -677,9 +677,9 @@ const accounthistory = (req, res) => {
                 }
                 
                 res.send({
-                    code: '500',
+                    code: '200',
                     message: 'success',
-                    error: err,
+                    error: 'null',
                     history: data,
                     daily_history:daily_data
                 });
@@ -687,11 +687,11 @@ const accounthistory = (req, res) => {
             }else{
                 
                 res.send({
-                    code: '500',
+                    code: '200',
                     message: 'fail',
-                    error: err,
-                    history: null,
-                    daily_history: null
+                    error: 'null',
+                    history: 'null',
+                    daily_history: 'null'
                 });
                 
             }
@@ -703,9 +703,9 @@ const accounthistory = (req, res) => {
         res.send({
             code: '503',
             message: 'db_fail',
-            error: null,
-            history: null,
-            daily_history: null
+            error: 'null',
+            history: 'null',
+            daily_history: 'null'
         });     
         
     }

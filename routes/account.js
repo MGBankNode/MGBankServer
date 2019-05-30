@@ -295,11 +295,7 @@ const accountRefresh = (id, date, conn, callback) => {
 
         }
 
-        //console.dir(result[0]);
-        //console.dir(result[1]);
-        //console.dir(result[2]);
-
-        if(result[0] && result[1] && result[2]){
+        if(result[0] && result[1]){
 
             var re = result[2];
             if(re.length > 0){
@@ -329,7 +325,7 @@ const accountRefresh = (id, date, conn, callback) => {
 
 
 
-            var query5 = "INSERT INTO nodeDB.aHistory(hDate, hType, hValue, hName, id, aBalance, cNum, aNum, cId) (SELECT hDate, hType, hValue, hName, id, aBalance, cNum, aNum, cId FROM accountDB.aHistory, nodeDB.defaultCategory WHERE id= " + id + " AND accountDB.aHistory.hId > (select hId from accountDB.aHistory where id = " + id + " AND hDate = (select hDate from nodeDB.aHistory where hType<>3 AND id = " + id + " order by hDate DESC Limit 1) AND hName = (select hName from nodeDB.aHistory where hType<>3 AND id = " + id + " order by hDate DESC Limit 1)) AND CASE accountDB.aHistory.hType WHEN 0 THEN nodeDB.defaultCategory.store='계좌입금' WHEN 1 THEN nodeDB.defaultCategory.store='계좌출금' WHEN 2 THEN accountDB.aHistory.hName=nodeDB.defaultCategory.store END);";
+            var query5 = "INSERT INTO nodeDB.aHistory(hDate, hType, hValue, hName, id, aBalance, cNum, aNum, cId) (SELECT hDate, hType, hValue, hName, id, aBalance, cNum, aNum, cId FROM accountDB.aHistory, nodeDB.defaultCategory WHERE id= " + id + "  AND accountDB.aHistory.hDate > '" + date + "' AND CASE accountDB.aHistory.hType WHEN 0 THEN nodeDB.defaultCategory.store='계좌입금' WHEN 1 THEN nodeDB.defaultCategory.store='계좌출금' WHEN 2 THEN accountDB.aHistory.hName=nodeDB.defaultCategory.store END);";
 
             var query6 = "UPDATE nodeDB.aHistory, (SELECT DISTINCT nodeDB.aHistory.hName as hName, nodeDB.aHistory.cId as cId FROM nodeDB.aHistory, nodeDB.defaultCategory WHERE id=" + id + " AND hType=2 AND nodeDB.aHistory.hName = nodeDB.defaultCategory.store AND nodeDB.aHistory.cId <> nodeDB.defaultCategory.cId) as A SET nodeDB.aHistory.cId = A.cId WHERE nodeDB.aHistory.hName = A.hName;";
             
@@ -352,9 +348,8 @@ const accountRefresh = (id, date, conn, callback) => {
 
                 if(result[0] && result[1] && result[2]){
 
-                    //console.dir(result[0]);
-                    //console.dir(result[1]);
-                    callback((result[3].update_at).toString(), "success");
+                    var row = result[3];
+                    callback(row[0].update_at, "success");
 
                 }else{
 
@@ -422,7 +417,7 @@ const accountrefresh = (req, res) => {
     
     if(pool){
         getAccountID(id, date, (err, data) => {
-            if(err){
+            if(data != "success" && err){
                 
                 console.error('새로고침 중 오류 : ' + err.stack);
                 res.send({code:'500', message:'error', error: err});

@@ -114,7 +114,7 @@ const joinuser = (req, res) => {
                 res.send({
                     code: '200',
                     message: 'success',
-                    error: null
+                    error: 'null'
                 });
                 
             }else{
@@ -122,7 +122,7 @@ const joinuser = (req, res) => {
                 res.send({
                     code: '200',
                     message: 'fail',
-                    error: null
+                    error: 'null'
                 });
                 
             }
@@ -132,7 +132,7 @@ const joinuser = (req, res) => {
         res.send({
             code: '503',
             message: 'db_fail',
-            error: null
+            error: 'null'
         });
 
     }
@@ -162,7 +162,7 @@ const idcheck = (req, res) => {
                 res.send({
                     code: '200',
                     message: 'fail',
-                    error: null
+                    error: 'null'
                 });
                 
             }else{
@@ -170,7 +170,7 @@ const idcheck = (req, res) => {
                 res.send({
                     code: '200',
                     message: 'success',
-                    error: null
+                    error: 'null'
                 });                
                 
             }
@@ -182,7 +182,7 @@ const idcheck = (req, res) => {
         res.send({
             code: '503',
             message: 'db_fail',
-            error: null
+            error: 'null'
         });     
         
     }
