@@ -35,7 +35,7 @@
   ```
 
 - 또한 accountID 값을 accountDB에 있는 사용자의 id로 설정한다. 
- (accountDB에서 사용자의 데이터 가져올 때 사용하기 위함)
+  (accountDB에서 사용자의 데이터 가져올 때 사용하기 위함)
 
   ```mysql
   update nodeDB.user 
@@ -56,7 +56,7 @@
   ```
 
 - 사용자의 거래내역 중 hType=2(카드)인 사용처의 default 카테고리 값을 찾아서 
- caweight의 해당 값을 가지는 튜플의 weight 값을 1 증가시킨다.
+  caweight의 해당 값을 가지는 튜플의 weight 값을 1 증가시킨다.
 
   ```mysql
   update nodeDB.caweight, (select DISTINCT store, cId 
@@ -78,7 +78,18 @@
     where nodeDB.defaultCategory.store 
     not in (select store from nodeDB.caweight);
   ```
+- 설명
 
+  ```mysql
+  CREATE DEFINER=`project`@`%` PROCEDURE `insertData`(IN $var VARCHAR(20))
+  BEGIN
+	  DECLARE i INT DEFAULT 1;
+	  WHILE i <=11 DO
+		  INSERT INTO nodeDB.caweight VALUES($var, i, 0);
+        SET i = i+1;
+    END WHILE;
+  END
+  ```
 - 위의 결과로 나온 store 값을 데이터베이스 내의 사용자 정의 프로시저를 호출하여 튜플 추가
 
   ```mysql
