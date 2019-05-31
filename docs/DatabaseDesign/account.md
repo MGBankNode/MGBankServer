@@ -78,19 +78,23 @@
     where nodeDB.defaultCategory.store 
     not in (select store from nodeDB.caweight);
   ```
-- 설명
+
+- caweight 테이블에 카테고리 별 가중치를 입력하기 위한 Database 사용자 정의 procedure이다.
+  -> 초기 생성될 때 weight 값은 0이다. 
+  (store 하나 당 category 번호 1-11에 대한 가중치를 가지기 때문에 튜플 11개 가진다.)
 
   ```mysql
-  CREATE DEFINER=`project`@`%` PROCEDURE `insertData`(IN $var VARCHAR(20))
+  CREATE PROCEDURE `insertData`(IN $var VARCHAR(20))
   BEGIN
-	  DECLARE i INT DEFAULT 1;
-	  WHILE i <=11 DO
-		  INSERT INTO nodeDB.caweight VALUES($var, i, 0);
-        SET i = i+1;
-    END WHILE;
+	DECLARE i INT DEFAULT 1;
+  	WHILE i <=11 DO
+		INSERT INTO nodeDB.caweight VALUES($var, i, 0);
+		SET i = i+1;
+    	END WHILE;
   END
   ```
-- 위의 결과로 나온 store 값을 데이터베이스 내의 사용자 정의 프로시저를 호출하여 튜플 추가
+  
+- 위의 결과로 나온 store 값 인자로 위에서 설명한 사용자 정의 프로시저를 호출하여 튜플 추가한다.
 
   ```mysql
   call nodeDB.insertData('store');
