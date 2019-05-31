@@ -8,6 +8,7 @@
 
 1. [일별 소비 분석](#1)
 2. [주별 소비 분석](#2)
+3. [월별 소비 분석](#3)
 
 <a name="1"></a>
 
@@ -16,7 +17,7 @@
 - 설명
 
   ```mysql
-  select hDate, hValue from aHistory where id = (select accountID from user where id = ?) AND hDate>= 'sDate' AND hDate< 'lDate' AND (hType = 1 OR hType = 2 OR hType = 3);
+  select hDate, hValue from aHistory where id = (select accountID from user where id = 'id') AND hDate>= 'sDate' AND hDate< 'lDate' AND (hType = 1 OR hType = 2 OR hType = 3);
   ```
 
 <a name="2"></a>
@@ -26,5 +27,13 @@
 - 설명
 
   ```mysql
-  select SUM(hValue) as weekSum from aHistory where id = (select accountID from user where id = '"+ id + "') AND hDate>= 'sDate' AND hDate< 'lDate' AND (hType = 1 OR hType = 2 OR hType = 3);
+  select SUM(hValue) as weekSum from aHistory where id = (select accountID from user where id = 'id') AND hDate>= 'sDate' AND hDate< 'lDate' AND (hType = 1 OR hType = 2 OR hType = 3);
+  ```
+
+<a name="3"></a>
+
+## 월별 소비 분석
+
+- ```mysql
+  select SUM(hValue) as monthSum from aHistory where id = (select accountID from user where id = 'id') AND hDate>= 'sDate' AND hDate< 'lDate' AND (hType = 1 OR hType = 2 OR hType = 3);
   ```

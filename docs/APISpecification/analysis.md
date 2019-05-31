@@ -8,6 +8,7 @@
 
 1. [analysisdaily](#1)
 2. [analysisweek](#2)
+3. [analysismonth](#3)
 
 <a name="1"></a>
 
@@ -104,7 +105,7 @@
 
 - **Response**
 
-  - 일별 소비 분석 성공
+  - 주별 소비 분석 성공
 
     ```json
     {
@@ -137,6 +138,71 @@
         "message" : "error",
     	"error" : "errorMessage",
         "weekPattern" : "null"
+    }
+    ```
+
+<a name="3"></a>
+
+## analysismonth
+
+- 설명
+
+  - id, dates의 정보를 받아 월별 지출 합계를 계산하여 보내준다.
+
+- **Endpoint**
+
+  - (POST) nodeapi/analysis/analysismonth
+
+- **Request Example**
+
+  - URL: (POST) nodeapi/analysis/analysismonth
+
+  - Body
+
+    ```json
+    {
+        "id" : "testID",
+        "dates" : "date,...,date"
+    }
+    ```
+
+    
+
+- **Response**
+
+  - 월별 소비 분석 성공
+
+    ```json
+    {
+        "code" : "200",
+        "message" : "success",
+        "error" : null,
+        "monthPattern" : {
+            "month" : "testMonth",
+            "monthSum" : "testMonthSum"
+        }
+    }
+    ```
+
+  - db 연결 오류
+
+    ```json
+    {
+        "code" : "503",
+        "message" : "db_fail",
+        "error" : "null",
+        "monthPattern" : "null"
+    }
+    ```
+
+  - 오류
+
+    ```json
+    {
+        "code" : "500",
+        "message" : "error",
+    	"error" : "errorMessage",
+        "monthPattern" : "null"
     }
     ```
 
