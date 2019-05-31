@@ -13,43 +13,72 @@
 
 ## 계좌 등록
 
-- 은행의 사용자 아이디를 확인한다.
+### -- <accountDB에 해당 사용자가 있는지 확인> --
+- 사용자의 id를 통해 전화번호와 이름이 일치하는 가상 계좌 데이터베이스의 id를 찾는다.
 
   ```mysql
-  select id from accountDB.client where (phone, name)=(select phone, name from nodeDB.user where id = 'id');
+  select id 
+    from accountDB.client 
+    where (phone, name)=
+      (select phone, name 
+        from nodeDB.user 
+        where id = 'id');
   ```
 
-- 설명
+### -- <accountDB에 해당 사용자가 있는 경우> --
+- 위의 쿼리 결과가 null이 아니면 accountCheck = 1으로 설정함으로써 계좌연동 표시를 한다. 
 
   ```mysql
-  update nodeDB.user set accountCheck=1 WHERE id = 'id';
+  update nodeDB.user 
+    set accountCheck=1 
+    WHERE id = 'id';
   ```
 
-- 설명
+- 또한 accountID 값을 accountDB에 있는 사용자의 id로 설정한다. 
+(accountDB에서 사용자의 데이터 가져올 때 사용하기 위함)
 
   ```mysql
-  update nodeDB.user set accountID= 'accountID' WHERE id = 'id';
+  update nodeDB.user 
+    set accountID= 'accountID' 
+    WHERE id = 'id';
   ```
 
-- 설명
+- 사용자의 거래 내역 중 defaultCategory에 없는 상점명을 default 카테고리에 미분류로 추가한다.
 
   ```mysql
-  insert into nodeDB.defaultCategory(store, cId) select DISTINCT hName, 11 from accountDB.aHistory where accountDB.aHistory.id = 'id' and accountDB.aHistory.hType=2 and aHistory.hName not in (select store from nodeDB.defaultCategory);
+  insert into nodeDB.defaultCategory(store, cId) 
+    select DISTINCT hName, 11 
+      from accountDB.aHistory 
+      where accountDB.aHistory.id = 'id' 
+        and accountDB.aHistory.hType=2 
+        and aHistory.hName 
+    not in (select store from nodeDB.defaultCategory);
   ```
 
-- 설명
+- 사용자의 거래내역 중 hType=2(카드)인 사용처의 default 카테고리 값을 찾아서 caweight의 해당 값을 가지는 튜플의 weight 값을 1 증가시킨다.
 
   ```mysql
-  update nodeDB.caweight, (select DISTINCT store, cId from nodeDB.defaultCategory where nodeDB.defaultCategory.store in (select hName from accountDB.aHistory where accountDB.aHistory.id = 'id' AND accountDB.aHistory.hType=2)) as a set weight = weight+1 where a.store = nodeDB.caweight.store AND a.cId = nodeDB.caweight.cId;
+  update nodeDB.caweight, (select DISTINCT store, cId 
+                            from nodeDB.defaultCategory 
+                            where nodeDB.defaultCategory.store 
+                            in (select hName 
+                                  from accountDB.aHistory 
+                                  where accountDB.aHistory.id = 'id' 
+                                    AND accountDB.aHistory.hType=2)) as a 
+  set weight = weight+1 
+  where a.store = nodeDB.caweight.store AND a.cId = nodeDB.caweight.cId;
   ```
 
-- 설명
+- defaultCategory테이블의 사용처 데이터 중 caweight 테이블에 없는 사용처를 찾는다.
 
   ```mysql
-  select DISTINCT store from nodeDB.defaultCategory where nodeDB.defaultCategory.store not in (select store from nodeDB.caweight);
+  select DISTINCT store 
+    from nodeDB.defaultCategory 
+    where nodeDB.defaultCategory.store 
+    not in (select store from nodeDB.caweight);
   ```
 
-- 설명
+- 위의 결과로 나온 store 값을 데이터베이스 내의 사용자 정의 프로시저를 호출하여 튜플 추가
 
   ```mysql
   call nodeDB.insertData('store');
