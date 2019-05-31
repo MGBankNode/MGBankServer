@@ -55,7 +55,8 @@
     not in (select store from nodeDB.defaultCategory);
   ```
 
-- 사용자의 거래내역 중 hType=2(카드)인 사용처의 default 카테고리 값을 찾아서 caweight의 해당 값을 가지는 튜플의 weight 값을 1 증가시킨다.
+- 사용자의 거래내역 중 hType=2(카드)인 사용처의 default 카테고리 값을 찾아서 
+caweight의 해당 값을 가지는 튜플의 weight 값을 1 증가시킨다.
 
   ```mysql
   update nodeDB.caweight, (select DISTINCT store, cId 
