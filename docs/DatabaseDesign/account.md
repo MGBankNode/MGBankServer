@@ -19,10 +19,9 @@
   ```mysql
   select id 
     from accountDB.client 
-    where (phone, name)=
-      (select phone, name 
-        from nodeDB.user 
-        where id = 'id');
+    where (phone, name)=(select phone, name 
+        			from nodeDB.user 
+        			where id = 'id');
   ```
 
 ##### -- <accountDB에 해당 사용자가 있는 경우> --
