@@ -218,6 +218,116 @@ const analysisweek = (req, res) => {
     }
 };
 
+const analysisMonth = (id, dates, callback) => {
+    pool.getConnection((err, conn) => {
+        if(err){  
+            
+            if(conn){
+                
+                conn.release();
+                
+            }
+            
+            callback(err, null);
+            return;
+            
+        }
+        
+       
+        var datesArray = (dates.toString()).split(',');
+        var monthCount = (datesArray.length - 1);
+        var query = '';
+        
+        for(var i = 0; i < monthCount; ++i){
+            
+             query += "select SUM(hValue) as monthSum from aHistory where id = (select accountID from user where id = '"+ id + "') AND hDate>= '" + datesArray[i] + "' AND hDate< '" + datesArray[i + 1] + "' AND (hType = 1 OR hType = 2 OR hType = 3);";
+            
+        }
+        
+        var exec = conn.query(query,
+                              (err, results) => {
+            conn.release();
+            console.log('실행 SQL = ' + exec.sql);
+            
+            if(err){
+                
+                callback(err, null);
+                return;
+                
+            }
+            
+            let data = [];
+            for(var i = 0; i < monthCount; ++i){
+            
+                var month = (i + 1).toString();
+                
+                if(results[i][0]){
+                    
+                    var monthSum = '0';
+                    if(results[i][0].monthSum){
+                        
+                        monthSum = (results[i][0].monthSum).toString();
+                    }
+                    
+                    data[i] = {
+                        month:month,
+                        monthSum:monthSum
+                    }
+                    
+                }else{
+                    
+                    data[i] = {
+                        month:month,
+                        monthSum:(results[i].monthSum).toString()
+                    }
+                    
+                }
+            }
+            
+            
+            callback(null, data);
+            
+        });
+    });
+};
+
+const analysismonth = (req, res) => {
+    console.log('[analysismonth] 호출');
+    
+    const { id, dates } = req.body;
+    
+    if(pool){
+        analysisMonth(id, dates, (err, results) => {
+            if(err){
+                
+                console.error('달 소비 분석 중 오류 : ' + err.stack);
+                res.send({code:'500', message:'error', error: err, monthPattern:'null'});
+                
+                return;
+                
+            }
+                
+            if(results){
+            
+                res.send({code:'200', message:'success', error: 'null', monthPattern:results});
+            
+            }else{
+                
+                res.send({code:'200', message:'success', error: 'null', monthPattern:'null'});
+                
+            }
+            
+            
+        });
+        
+    }else{
+
+        res.send({code:'503', message:'db_fail', error: 'null', monthPattern:'null'});
+
+    }
+};
+
 module.exports.init = init;
 module.exports.analysisweek = analysisweek;
 module.exports.analysisdaily = analysisdaily;
+module.exports.analysismonth = analysismonth;
