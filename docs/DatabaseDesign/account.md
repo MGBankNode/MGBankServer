@@ -121,8 +121,8 @@
 
   ```mysql
   select accountID 
-  	from user 
-	where id = 'id';
+    from user 
+    where id = 'id';
   ```
 
 - 사용자의 최종접속시간을 가져와서 해당 시간 이후의 accountDB의 사용자 거래내역 중 defaultCategory에 없는 사용처이면 
@@ -214,8 +214,8 @@ default카테고리에 미분류로 데이터를 추가한다.
 
   ```mysql
   select update_at 
-  	from user 
-	where accountID = 'id';
+    from user 
+    where accountID = 'id';
   ```
 
   
