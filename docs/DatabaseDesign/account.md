@@ -206,8 +206,8 @@ default카테고리에 미분류로 데이터를 추가한다.
 
   ```mysql
   update user 
-  	set update_at = CURRENT_TIMESTAMP 
-	where accountID = 'id';
+    set update_at = CURRENT_TIMESTAMP 
+    where accountID = 'id';
   ```
 
 - 해당 사용자의 마지막 수정 시간을 가져온다.
