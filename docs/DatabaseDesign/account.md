@@ -120,7 +120,9 @@
 - 사용자의 id를 통해 accountID를 찾는다.
 
   ```mysql
-  select accountID from user where id = 'id';
+  select accountID 
+  	from user 
+	where id = 'id';
   ```
 
 - 사용자의 최종접속시간을 가져와서 해당 시간 이후의 accountDB의 사용자 거래내역 중 defaultCategory에 없는 사용처이면 
