@@ -13,18 +13,22 @@
 
 ## 기존 예산 확인
 
-- 설명
+- 사용자의 id를 통해 해당 사용자의 예산을 가져온다.
 
   ```mysql
-  select budget from user where id = 'id';
+  select budget 
+    from user 
+    where id = 'id';
   ```
 
 <a name="2"></a>
 
 ## 예산 변경
 
-- 설명
+- 해당 사용자의 예산을 'budget'(입력받은 값)으로 변경한다.
 
   ```mysql
-  update user set budget = 'budget' where id = 'id';
+  update user 
+    set budget = 'budget' 
+    where id = 'id';
   ```
