@@ -19,12 +19,13 @@
 - 해당 기간동안의 거래내역을 가져온다.
 
   ```mysql
-  select hId, hDate, hType, hValue, hName, aBalance, (select aType from accountDB.account 
-                                                        where aId = (select distinct aId from accountDB.account_card 
-                                                                        where aNum = nodeDB.aHistory.aNum)) as aType, 
-    (select cType from accountDB.card 
-        where cId = (select cId from accountDB.account_card 
-                        where cNum = nodeDB.aHistory.cNum)) as cType, cName 
+  select hId, hDate, hType, hValue, hName, aBalance, 
+  (select aType from accountDB.account 
+      where aId = (select distinct aId from accountDB.account_card 
+                      where aNum = nodeDB.aHistory.aNum)) as aType, 
+  (select cType from accountDB.card 
+      where cId = (select cId from accountDB.account_card 
+                      where cNum = nodeDB.aHistory.cNum)) as cType, cName 
     from nodeDB.aHistory, nodeDB.category 
     where id = (select accountID from nodeDB.user where id = 'id') 
     AND hDate>='sDate' AND hDate<'lDate' 
@@ -65,11 +66,12 @@
 - 계좌번호를 통해 사용자의 거래내역을 가져온다.
 
   ```mysql
-  select hId, hDate, hType, hValue, hName, aBalance, (select aType from accountDB.account 
-                                                          WHERE aId = (select distinct aId from accountDB.account_card 
-                                                                           where aNum = 'aNum')) as aType,
-      (select cType from accountDB.card 
-         where cId = (select cId from accountDB.account_card where cNum = nodeDB.aHistory.cNum)) as cType, cName 
+  select hId, hDate, hType, hValue, hName, aBalance, 
+  (select aType from accountDB.account 
+       WHERE aId = (select distinct aId from accountDB.account_card 
+                         where aNum = 'aNum')) as aType,
+  (select cType from accountDB.card 
+       where cId = (select cId from accountDB.account_card where cNum = nodeDB.aHistory.cNum)) as cType, cName 
     from nodeDB.aHistory, nodeDB.category 
     where nodeDB.aHistory.cId=nodeDB.category.cId 
     AND hDate>='sDate' AND hDate<'lDate' 
@@ -83,7 +85,10 @@
 - 사용자의 계좌 정보와 잔액을 가져온다.
 
   ```mysql
-  SELECT DISTINCT aNum, aBalance, (SELECT aType from accountDB.account where aId = account_card.aId) as aType 
+  SELECT DISTINCT aNum, aBalance, 
+  (SELECT aType 
+      from accountDB.account 
+      where aId = account_card.aId) as aType 
     FROM accountDB.account_card 
     WHERE id = (select accountID from nodeDB.user where id = 'id')
   ```
