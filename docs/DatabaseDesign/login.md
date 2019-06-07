@@ -12,20 +12,27 @@
 
 ## 로그인
 
-- 설명
+- 사용자의 아이디와 패스워드를 통해 사용자의 정보를 가져온다.
 
   ```mysql
-  select name, phone, accountCheck, update_at from user where id = 'id' and pw = 'pw';
+  select name, phone, accountCheck, update_at 
+    from user 
+    where id = 'id' 
+    and pw = 'pw';
   ```
 
-- 설명
+- 사용자의 계좌별 잔액 정보를 가져온다.
 
   ```mysql
-  select aBalance from aHistory where id = (select accountID from nodeDB.user where id = 'id') order by hId DESC limit 1;
+  select aNum, aBalance 
+    from accountDB.account_card 
+    where id = (select accountID from nodeDB.user where id = 'id');
   ```
 
-- 설명
+- 사용자의 마지막 접근 시간을 업데이트 시킨다.
 
   ```mysql
-  update user set update_at = CURRENT_TIMESTAMP where id = 'id';
+  update user 
+    set update_at = CURRENT_TIMESTAMP 
+    where id = 'id';
   ```
