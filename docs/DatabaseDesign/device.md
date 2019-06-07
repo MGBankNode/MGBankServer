@@ -19,12 +19,12 @@
   ```mysql
   insert into device 
     set mobile = 'mobile', 
-    osVersion = 'osVersion', 
-    model = 'model', 
-    display = 'display', 
-    manufacturer = 'manufacturer', 
-    macAddress = 'macAddress', 
-    registrationId = 'registrationId';
+        osVersion = 'osVersion', 
+        model = 'model', 
+        display = 'display', 
+        manufacturer = 'manufacturer', 
+        macAddress = 'macAddress', 
+        registrationId = 'registrationId';
   ```
 
 <a name="2"></a>
