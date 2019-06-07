@@ -69,9 +69,10 @@
   select hId, hDate, hType, hValue, hName, aBalance, 
   (select aType from accountDB.account 
        WHERE aId = (select distinct aId from accountDB.account_card 
-                         where aNum = 'aNum')) as aType,
+                          where aNum = 'aNum')) as aType,
   (select cType from accountDB.card 
-       where cId = (select cId from accountDB.account_card where cNum = nodeDB.aHistory.cNum)) as cType, cName 
+       where cId = (select cId from accountDB.account_card 
+                          where cNum = nodeDB.aHistory.cNum)) as cType, cName 
     from nodeDB.aHistory, nodeDB.category 
     where nodeDB.aHistory.cId=nodeDB.category.cId 
     AND hDate>='sDate' AND hDate<'lDate' 
