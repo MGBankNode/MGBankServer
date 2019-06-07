@@ -17,7 +17,14 @@
 - mobile, osVersion, model, display, manufacturer, macAddress, registrationId의 정보를 device 테이블에 저장한다.
 
   ```mysql
-  insert into device set mobile = 'mobile', osVersion = 'osVersion', model = 'model', display = 'display', manufacturer = 'manufacturer', macAddress = 'macAddress', registrationId = 'registrationId';
+  insert into device 
+    set mobile = 'mobile', 
+    osVersion = 'osVersion', 
+    model = 'model', 
+    display = 'display', 
+    manufacturer = 'manufacturer', 
+    macAddress = 'macAddress', 
+    registrationId = 'registrationId';
   ```
 
 <a name="2"></a>
@@ -27,7 +34,9 @@
 - 해당 mobile과 일치하는 단말의 정보가 있는지 device 테이블에서 확인한다.
 
   ```mysql
-  select mobile from device where mobile = 'mobile';
+  select mobile 
+    from device 
+    where mobile = 'mobile';
   ```
 
 <a name="3"></a>
@@ -37,5 +46,6 @@
 - 해당 mobile과 일치하는 단말의 정보를 device 테이블에서 제거한다.
 
   ```mysql
-  delete from device where mobile = 'mobile';
+  delete from device 
+    where mobile = 'mobile';
   ```
