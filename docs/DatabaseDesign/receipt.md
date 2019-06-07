@@ -14,66 +14,103 @@
 
 ## 상점명 카테고리 확인
 
-- 설명
+- 해당 상점명의 카테고리 번호를 가져온다.
 
   ```mysql
-  select cId from defaultCategory where store = 'hName';
+  select cId 
+    from defaultCategory 
+    where store = 'hName';
   ```
 
 <a name="2"></a>
 
-## 영수증 거래 내역 추가1
+## 영수증 거래 내역 추가1 - 해당 상점명이 defaultCategory에 있는 경우
 
-- 설명
+- 카테고리의 가중치를 증가시킨다.
 
   ```mysql
-  update caweight set weight = weight + 1 where store = 'hName' AND cId = 'cId';
+  update caweight 
+    set weight = weight + 1 
+    where store = 'hName' 
+    AND cId = 'cId';
   ```
 
-- 설명
+- 가중치의 변경으로 인해 해당 상점의 디폴트 카테고리의 값이 바뀌었으면 업데이트 시켜준다.
 
   ```mysql
-  update defaultCategory SET defaultCategory.cId = (select cId from caweight where store = 'hName' AND cId <> 11 ORDER BY weight DESC LIMIT 1) where defaultCategory.store = (select store from caweight where store = 'hName' AND cId <> 11 ORDER BY weight DESC LIMIT 1);
+  update defaultCategory 
+    SET defaultCategory.cId = (select cId from caweight 
+                                  where store = 'hName' AND cId <> 11 ORDER BY weight DESC LIMIT 1) 
+    where defaultCategory.store = (select store from caweight 
+                                     where store = 'hName' AND cId <> 11 ORDER BY weight DESC LIMIT 1);
   ```
 
-- 설명
+- 영수증 인식 결과 거래내역에 추가한다.
 
   ```mysql
-  INSERT INTO nodeDB.aHistory(hDate, hType, hValue, hName, id, aNum, cId) VALUES('hDate', 3, 'hValue', 'hName', (select accountID from user where id = 'id'), '현금', 'cId'); SELECT hId from aHistory where hDate = 'hDate' AND id = (select accountID from user where id = 'id');
+  INSERT INTO nodeDB.aHistory(hDate, hType, hValue, hName, id, aNum, cId) 
+    VALUES('hDate', 3, 'hValue', 'hName', (select accountID from user where id = 'id'), '현금', 'cId'); 
+  ```
+  
+  - 해당 날짜의 hId를 가져온다.
+  
+  ``` mysql
+  SELECT hId 
+    from aHistory 
+    where hDate = 'hDate' 
+    AND id = (select accountID from user where id = 'id');
   ```
 
 <a name="3"></a>
 
-## 영수증 거래 내역 추가2
+## 영수증 거래 내역 추가2 - 해당 상점명이 데이터베이스에 없는 경우
 
-- 설명
+- defaultCategory에 해당 상점명과 카테고리 번호를 저장한다.
 
   ```mysql
-  insert into defaultCategory(store, cId) values('hName', 'cId');
+  insert into defaultCategory(store, cId) 
+    values('hName', 'cId');
   ```
 
-- 설명
+- caweight 테이블에도 해당 상점명에 대한 내역을 저장하는 함수를 호출한다.
 
   ```mysql
   CALL nodeDB.insertData('hName');
   ```
 
-- 설명
+- 사용자가 설정한 카테고리의 가중치를 업데이트 시켜준다.
 
   ```mysql
-  update caweight set weight = weight + 1 where store = 'hName' AND cId = 'cId';
+  update caweight 
+    set weight = weight + 1 
+    where store = 'hName' 
+    AND cId = 'cId';
   ```
 
-- 설명
+- 사용자가 설정한 카테고리를 디폴트카테고리로 설정한다.
 
   ```mysql
-  update defaultCategory SET defaultCategory.cId = (select cId from caweight where store = 'hName' AND cId <> 11 ORDER BY weight DESC LIMIT 1) where defaultCategory.store = (select store from caweight where store = 'hName' AND cId <> 11 ORDER BY weight DESC LIMIT 1);
+  update defaultCategory 
+    SET defaultCategory.cId = (select cId from caweight 
+                                  where store = 'hName' AND cId <> 11 ORDER BY weight DESC LIMIT 1) 
+    where defaultCategory.store = (select store from caweight 
+                                       where store = 'hName' AND cId <> 11 ORDER BY weight DESC LIMIT 1);
   ```
 
-- 설명
+- 영수증 인식 결과를 거래내역에 추가한다.
 
   ```mysql
-  INSERT INTO nodeDB.aHistory(hDate, hType, hValue, hName, id, aNum, cId) VALUES('hDate', 3, 'hValue', 'hName', (select accountID from user where id = 'id'), '현금', 'cId'); SELECT hId from aHistory where hDate = 'hDate' AND id = (select accountID from user where id = 'id');
+  INSERT INTO nodeDB.aHistory(hDate, hType, hValue, hName, id, aNum, cId) 
+    VALUES('hDate', 3, 'hValue', 'hName', (select accountID from user where id = 'id'), '현금', 'cId'); 
+  ```
+
+- 해당 날짜의 hId를 가져온다.
+
+  ```mysql
+    SELECT hId 
+      from aHistory 
+      where hDate = 'hDate' 
+      AND id = (select accountID from user where id = 'id');
   ```
 
   
