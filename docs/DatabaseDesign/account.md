@@ -155,7 +155,8 @@ default카테고리에 미분류로 데이터를 추가한다.
 						WHERE nodeDB.aHistory.id= 'accountID')) AS a 
 	SET weight = weight+1 
 	WHERE a.store = nodeDB.caweight.store 
-	AND a.cId = nodeDB.caweight.cId;
+	AND a.cId = nodeDB.caweight.cId
+	AND id='id';
   ```
 
 - defaultCategoryd의 사용처 중 caweight에서 없는 사용처를 찾는다.
