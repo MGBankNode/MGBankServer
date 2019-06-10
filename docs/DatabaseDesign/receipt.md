@@ -29,7 +29,7 @@
 - 해당 사용자의 거래내역 중 해당 상점명이 있는지 확인한다.
 
   ```mysql
-    SELECT COuNT(*) 
+    SELECT COUNT(*) 
       FROM aHistory 
       WHERE id=(SELECT accountID FROM user WHERE id='id') 
       AND hName='hName';
