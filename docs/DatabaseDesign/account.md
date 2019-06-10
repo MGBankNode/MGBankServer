@@ -155,8 +155,7 @@ default카테고리에 미분류로 데이터를 추가한다.
 						WHERE nodeDB.aHistory.id= 'accountID')) AS a 
 	SET weight = weight+1 
 	WHERE a.store = nodeDB.caweight.store 
-	AND a.cId = nodeDB.caweight.cId
-	AND id='id';
+	AND a.cId = nodeDB.caweight.cId;
   ```
 
 - defaultCategoryd의 사용처 중 caweight에서 없는 사용처를 찾는다.
@@ -200,7 +199,8 @@ default카테고리에 미분류로 데이터를 추가한다.
 		AND nodeDB.aHistory.hName = nodeDB.defaultCategory.store 
 		AND nodeDB.aHistory.cId <> nodeDB.defaultCategory.cId) as A 
 	SET nodeDB.aHistory.cId = A.cId 
-	WHERE nodeDB.aHistory.hName = A.hName;
+	WHERE nodeDB.aHistory.hName = A.hName
+	AND id='accountId';
   ```
 
 - 해당 사용자의 마지막 수정 시간을 업데이트 한다.
