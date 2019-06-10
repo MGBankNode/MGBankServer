@@ -26,6 +26,15 @@
 
 ## 영수증 거래 내역 추가1 - 해당 상점명이 defaultCategory에 있는 경우
 
+- 해당 사용자의 거래내역 중 해당 상점명이 있는지 확인한다.
+
+  ```mysql
+    SELECT COuNT(*) 
+      FROM aHistory 
+      WHERE id=(SELECT accountID FROM user WHERE id='id') 
+      AND hName='hName';
+  ```
+    
 - 카테고리의 가중치를 증가시킨다.
 
   ```mysql
