@@ -15,4 +15,4 @@
 - [history](https://github.com/MGBankNode/MGBankServer/tree/master/docs/APISpecification/history.md)
 - [join](https://github.com/MGBankNode/MGBankServer/tree/master/docs/APISpecification/join.md)
 - [login](https://github.com/MGBankNode/MGBankServer/tree/master/docs/APISpecification/login.md)
-- [receipt](https://github.com/MGBankNode/MGBankServer/tree/master/docs/APISpecification/push.md)
+- [receipt](https://github.com/MGBankNode/MGBankServer/tree/master/docs/APISpecification/receipt.md)
